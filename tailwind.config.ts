@@ -13,6 +13,11 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        'serif': ['Playfair Display', 'serif'],
+        'sans': ['Lato', 'sans-serif'],
+        'arabic': ['Cairo', 'sans-serif'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

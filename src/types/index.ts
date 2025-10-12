@@ -12,17 +12,20 @@ export interface Lawyer {
   activeCases: number;
 }
 
-export type CaseType = "Type1" | "Type2" | "Type3";
+export type CaseType = "criminel" | "enquête" | "civil";
 export type CaseStatus = "pending" | "assigned" | "accepted" | "rejected" | "completed";
 
 export interface Case {
   id: string;
+  caseNumber: string;
   title: string;
   type: CaseType;
   description: string;
   createdAt: string;
+  courtDate: string;
   status: CaseStatus;
   assignedLawyerId?: string;
+  assignedLawyerName?: string;
   notificationSent?: boolean;
   notificationDate?: string;
 }

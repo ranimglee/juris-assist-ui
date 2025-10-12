@@ -72,6 +72,7 @@ export default function Cases() {
             ...c,
             status: "assigned",
             assignedLawyerId: selectedLawyer.id,
+            assignedLawyerName: null, // Null jusqu'à ce que l'avocat accepte
             notificationSent: true,
             notificationDate: new Date().toISOString(),
           }
@@ -81,7 +82,7 @@ export default function Cases() {
     toast.success(
       `Affaire assignée à ${selectedLawyer.firstName} ${selectedLawyer.lastName}`,
       {
-        description: "Une notification par email a été envoyée à l'avocat",
+        description: "Une notification par email a été envoyée à l'avocat. En attente de réponse.",
       }
     );
   };

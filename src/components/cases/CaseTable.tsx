@@ -42,9 +42,10 @@ export function CaseTable({ cases, onEdit, onAssign, getLawyerName }: CaseTableP
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">
+              <TableHead className="font-semibold">N° Affaire</TableHead>
               <TableHead className="font-semibold">Titre</TableHead>
               <TableHead className="font-semibold">Type</TableHead>
-              <TableHead className="font-semibold">Date de création</TableHead>
+              <TableHead className="font-semibold">Audience</TableHead>
               <TableHead className="font-semibold">Statut</TableHead>
               <TableHead className="font-semibold">Avocat assigné</TableHead>
               <TableHead className="font-semibold">Notification</TableHead>
@@ -58,6 +59,9 @@ export function CaseTable({ cases, onEdit, onAssign, getLawyerName }: CaseTableP
               
               return (
                 <TableRow key={caseItem.id} className="hover:bg-muted/30 transition-colors">
+                  <TableCell className="font-mono text-sm font-semibold">
+                    {caseItem.caseNumber}
+                  </TableCell>
                   <TableCell className="font-medium max-w-xs">
                     <div>
                       <p className="font-semibold">{caseItem.title}</p>
@@ -65,10 +69,12 @@ export function CaseTable({ cases, onEdit, onAssign, getLawyerName }: CaseTableP
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline">{caseItem.type}</Badge>
+                    <Badge variant="outline">
+                      {caseItem.type.charAt(0).toUpperCase() + caseItem.type.slice(1)}
+                    </Badge>
                   </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {new Date(caseItem.createdAt).toLocaleDateString('fr-FR')}
+                    {new Date(caseItem.courtDate).toLocaleDateString('fr-FR')}
                   </TableCell>
                   <TableCell>
                     <Badge variant={status.variant} className="flex items-center gap-1 w-fit">
@@ -77,8 +83,8 @@ export function CaseTable({ cases, onEdit, onAssign, getLawyerName }: CaseTableP
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    {caseItem.assignedLawyerId ? (
-                      <span className="text-sm font-medium">{getLawyerName(caseItem.assignedLawyerId)}</span>
+                    {caseItem.assignedLawyerName || (caseItem.assignedLawyerId ? getLawyerName(caseItem.assignedLawyerId) : null) ? (
+                      <span className="text-sm font-medium">{caseItem.assignedLawyerName || getLawyerName(caseItem.assignedLawyerId)}</span>
                     ) : (
                       <span className="text-sm text-muted-foreground italic">Non assigné</span>
                     )}

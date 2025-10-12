@@ -14,27 +14,33 @@ interface CaseModalProps {
   caseData?: Case;
 }
 
-const caseTypes: CaseType[] = ["Type1", "Type2", "Type3"];
+const caseTypes: CaseType[] = ["criminel", "enquête", "civil"];
 
 export function CaseModal({ isOpen, onClose, onSave, caseData }: CaseModalProps) {
   const [formData, setFormData] = useState({
+    caseNumber: "",
     title: "",
-    type: "Type1" as CaseType,
+    type: "criminel" as CaseType,
     description: "",
+    courtDate: "",
   });
 
   useEffect(() => {
     if (caseData) {
       setFormData({
+        caseNumber: caseData.caseNumber,
         title: caseData.title,
         type: caseData.type,
         description: caseData.description,
+        courtDate: caseData.courtDate,
       });
     } else {
       setFormData({
+        caseNumber: "",
         title: "",
-        type: "Type1",
+        type: "criminel",
         description: "",
+        courtDate: "",
       });
     }
   }, [caseData, isOpen]);
@@ -43,9 +49,11 @@ export function CaseModal({ isOpen, onClose, onSave, caseData }: CaseModalProps)
     e.preventDefault();
     onSave({
       ...formData,
+      caseNumber: formData.caseNumber || `AFF-${Date.now()}`,
       createdAt: caseData?.createdAt || new Date().toISOString().split('T')[0],
       status: caseData?.status || "pending",
       assignedLawyerId: caseData?.assignedLawyerId,
+      assignedLawyerName: caseData?.assignedLawyerName,
       notificationSent: caseData?.notificationSent,
       notificationDate: caseData?.notificationDate,
     });
@@ -61,6 +69,37 @@ export function CaseModal({ isOpen, onClose, onSave, caseData }: CaseModalProps)
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="caseNumber">Numéro d'affaire</Label>
+              <Input
+                id="caseNumber"
+                value={formData.caseNumber}
+                onChange={(e) => setFormData({ ...formData, caseNumber: e.target.value })}
+                placeholder="Généré automatiquement"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="type">Type *</Label>
+              <Select
+                value={formData.type}
+                onValueChange={(value) => setFormData({ ...formData, type: value as CaseType })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {caseTypes.map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {type.charAt(0).toUpperCase() + type.slice(1)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
           <div className="space-y-2">
             <Label htmlFor="title">Titre *</Label>
             <Input
@@ -73,22 +112,14 @@ export function CaseModal({ isOpen, onClose, onSave, caseData }: CaseModalProps)
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="type">Type *</Label>
-            <Select
-              value={formData.type}
-              onValueChange={(value) => setFormData({ ...formData, type: value as CaseType })}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {caseTypes.map((type) => (
-                  <SelectItem key={type} value={type}>
-                    {type}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Label htmlFor="courtDate">Audience au tribunal *</Label>
+            <Input
+              id="courtDate"
+              type="date"
+              value={formData.courtDate}
+              onChange={(e) => setFormData({ ...formData, courtDate: e.target.value })}
+              required
+            />
           </div>
 
           <div className="space-y-2">

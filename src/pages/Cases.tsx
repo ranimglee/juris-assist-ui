@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Navbar } from "@/components/layout/Navbar";
 import { Layout } from "@/components/layout/Layout";
 import { CaseTable } from "@/components/cases/CaseTable";
 import { CaseModal } from "@/components/cases/CaseModal";
@@ -101,41 +102,44 @@ export default function Cases() {
   };
 
   return (
-    <Layout>
-      <div className="p-8 space-y-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Gestion des affaires</h1>
-            <p className="text-muted-foreground mt-1">Créez et assignez des affaires aux avocats</p>
+    <>
+      <Navbar />
+      <Layout>
+        <div className="p-8 space-y-8 mt-20">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-foreground">Gestion des affaires</h1>
+              <p className="text-muted-foreground mt-1">Créez et assignez des affaires aux avocats</p>
+            </div>
+            <div className="flex gap-3">
+              <Button onClick={assignAllPendingCases} variant="outline" className="border-primary text-primary hover:bg-primary/10">
+                <Zap className="h-5 w-5 mr-2" />
+                Assigner tout
+              </Button>
+              <Button onClick={handleAdd} className="gradient-accent">
+                <Plus className="h-5 w-5 mr-2" />
+                Créer une affaire
+              </Button>
+            </div>
           </div>
-          <div className="flex gap-3">
-            <Button onClick={assignAllPendingCases} variant="outline" className="border-primary text-primary hover:bg-primary/10">
-              <Zap className="h-5 w-5 mr-2" />
-              Assigner tout
-            </Button>
-            <Button onClick={handleAdd} className="gradient-accent">
-              <Plus className="h-5 w-5 mr-2" />
-              Créer une affaire
-            </Button>
-          </div>
-        </div>
 
-        <div className="bg-card rounded-lg shadow-card p-6">
-          <CaseTable
-            cases={cases}
-            onEdit={handleEdit}
-            onAssign={assignCaseToLawyer}
-            getLawyerName={getLawyerName}
+          <div className="bg-card rounded-lg shadow-card p-6">
+            <CaseTable
+              cases={cases}
+              onEdit={handleEdit}
+              onAssign={assignCaseToLawyer}
+              getLawyerName={getLawyerName}
+            />
+          </div>
+
+          <CaseModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            onSave={handleSave}
+            caseData={editingCase}
           />
         </div>
-
-        <CaseModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onSave={handleSave}
-          caseData={editingCase}
-        />
-      </div>
-    </Layout>
+      </Layout>
+    </>
   );
 }

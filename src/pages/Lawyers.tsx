@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Navbar } from "@/components/layout/Navbar";
 import { Layout } from "@/components/layout/Layout";
 import { LawyerTable } from "@/components/lawyers/LawyerTable";
 import { LawyerModal } from "@/components/lawyers/LawyerModal";
@@ -43,34 +44,37 @@ export default function Lawyers() {
   };
 
   return (
-    <Layout>
-      <div className="p-8 space-y-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Gestion des avocats</h1>
-            <p className="text-muted-foreground mt-1">Ajoutez, modifiez et gérez vos avocats</p>
+    <>
+      <Navbar />
+      <Layout>
+        <div className="p-8 space-y-8 mt-20">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-foreground">Gestion des avocats</h1>
+              <p className="text-muted-foreground mt-1">Ajoutez, modifiez et gérez vos avocats</p>
+            </div>
+            <Button onClick={handleAdd} className="gradient-accent">
+              <Plus className="h-5 w-5 mr-2" />
+              Ajouter un avocat
+            </Button>
           </div>
-          <Button onClick={handleAdd} className="gradient-accent">
-            <Plus className="h-5 w-5 mr-2" />
-            Ajouter un avocat
-          </Button>
-        </div>
 
-        <div className="bg-card rounded-lg shadow-card p-6">
-          <LawyerTable
-            lawyers={lawyers}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
+          <div className="bg-card rounded-lg shadow-card p-6">
+            <LawyerTable
+              lawyers={lawyers}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+            />
+          </div>
+
+          <LawyerModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            onSave={handleSave}
+            lawyer={editingLawyer}
           />
         </div>
-
-        <LawyerModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onSave={handleSave}
-          lawyer={editingLawyer}
-        />
-      </div>
-    </Layout>
+      </Layout>
+    </>
   );
 }

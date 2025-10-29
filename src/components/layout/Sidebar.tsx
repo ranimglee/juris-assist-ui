@@ -1,6 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { LayoutDashboard, Users, Briefcase, Scale } from "lucide-react";
 import { cn } from "@/lib/utils";
+import onatLogo from "@/assets/onat-logo.webp";
 
 const navigation = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
@@ -14,7 +15,7 @@ export function Sidebar() {
       <div className="p-6 border-b border-sidebar-border">
         <div className="flex flex-col items-center gap-3">
           <img 
-            src="/src/assets/onat-logo.webp" 
+            src={onatLogo} 
             alt="ONAT Logo" 
             className="h-16 w-auto object-contain"
           />

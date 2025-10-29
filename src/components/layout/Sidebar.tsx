@@ -10,20 +10,22 @@ const navigation = [
 
 export function Sidebar() {
   return (
-    <aside className="w-64 gradient-primary text-sidebar-foreground flex flex-col">
+    <aside className="w-64 bg-sidebar-background text-sidebar-foreground flex flex-col border-r border-sidebar-border shadow-elegant">
       <div className="p-6 border-b border-sidebar-border">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-sidebar-primary flex items-center justify-center">
-            <Scale className="w-6 h-6 text-sidebar-primary-foreground" />
-          </div>
-          <div>
-            <h1 className="text-lg font-bold text-sidebar-foreground">LegalFlow</h1>
-            <p className="text-xs text-sidebar-foreground/70">Gestion Juridique</p>
+        <div className="flex flex-col items-center gap-3">
+          <img 
+            src="/src/assets/onat-logo.webp" 
+            alt="ONAT Logo" 
+            className="h-16 w-auto object-contain"
+          />
+          <div className="text-center">
+            <h1 className="text-lg font-bold text-sidebar-foreground font-serif">ONAT</h1>
+            <p className="text-xs text-muted-foreground">Gestion Juridique</p>
           </div>
         </div>
       </div>
 
-      <nav className="flex-1 p-4 space-y-1">
+      <nav className="flex-1 p-4 space-y-2">
         {navigation.map((item) => (
           <NavLink
             key={item.name}
@@ -31,17 +33,17 @@ export function Sidebar() {
             end={item.href === "/"}
             className={({ isActive }) =>
               cn(
-                "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200",
+                "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 font-medium",
                 isActive
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground shadow-md"
-                  : "text-sidebar-foreground/80 hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
+                  ? "bg-primary text-primary-foreground shadow-elegant"
+                  : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
               )
             }
           >
             {({ isActive }) => (
               <>
-                <item.icon className={cn("w-5 h-5", isActive && "text-sidebar-primary")} />
-                <span className="font-medium">{item.name}</span>
+                <item.icon className="w-5 h-5" />
+                <span>{item.name}</span>
               </>
             )}
           </NavLink>
@@ -49,9 +51,9 @@ export function Sidebar() {
       </nav>
 
       <div className="p-4 border-t border-sidebar-border">
-        <div className="px-4 py-3 rounded-lg bg-sidebar-accent/30">
+        <div className="px-4 py-3 rounded-lg bg-sidebar-accent">
           <p className="text-sm font-medium text-sidebar-foreground">Admin</p>
-          <p className="text-xs text-sidebar-foreground/70">admin@legalflow.fr</p>
+          <p className="text-xs text-muted-foreground">admin@onat.tn</p>
         </div>
       </div>
     </aside>

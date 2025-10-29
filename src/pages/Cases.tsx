@@ -109,11 +109,11 @@ export default function Cases() {
             <p className="text-muted-foreground mt-1">Créez et assignez des affaires aux avocats</p>
           </div>
           <div className="flex gap-3">
-            <Button onClick={assignAllPendingCases} variant="outline" className="border-primary text-primary hover:bg-primary/10">
+            <Button onClick={assignAllPendingCases} variant="outline">
               <Zap className="h-5 w-5 mr-2" />
               Assigner tout
             </Button>
-            <Button onClick={handleAdd} className="gradient-accent">
+            <Button onClick={handleAdd}>
               <Plus className="h-5 w-5 mr-2" />
               Créer une affaire
             </Button>

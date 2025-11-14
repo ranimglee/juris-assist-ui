@@ -2,137 +2,263 @@ import { useState } from "react";
 import { Lawyer } from "@/types";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash2, ArrowUpDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Pencil, Trash2, ArrowUpDown, Search, Mail, Phone, MapPin, Calendar, Briefcase, TrendingUp, TrendingDown, Minus, FileText } from "lucide-react";
+import { DeleteLawyerModal } from "./DeleteLawyerModal";
 
 interface LawyerTableProps {
   lawyers: Lawyer[];
   onEdit: (lawyer: Lawyer) => void;
-  onDelete: (id: string) => void;
+  onDelete: (id: number) => void;
+  isLoading?: boolean;
 }
 
-type SortField = "lastName" | "registrationDate" | "activeCases" | "region";
+type SortField = "nom" | "region" | "dateInscription" | "affairesEnCours";
 type SortOrder = "asc" | "desc";
 
-export function LawyerTable({ lawyers, onEdit, onDelete }: LawyerTableProps) {
-  const [sortField, setSortField] = useState<SortField>("lastName");
-  const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
+// Skeleton for loading state
+const TableSkeleton = () => (
+  <TableBody>
+    {[...Array(5)].map((_, i) => (
+      <TableRow key={i}>
+        {[...Array(7)].map((_, j) => (
+          <TableCell key={j}>
+            <div className="h-4 bg-gray-200 rounded animate-pulse" />
+          </TableCell>
+        ))}
+      </TableRow>
+    ))}
+  </TableBody>
+);
+
+// Empty state component
+const EmptyState = ({ hasFilters, onClearFilters }: { hasFilters: boolean; onClearFilters: () => void }) => (
+  <TableBody>
+    <TableRow>
+      <TableCell colSpan={7} className="h-96">
+        <div className="flex flex-col items-center justify-center space-y-4 text-center py-12">
+          <div className="relative">
+            <div className="absolute inset-0 bg-primary/5 blur-3xl rounded-full" />
+            <div className="relative bg-gradient-to-br from-primary/10 to-primary/5 p-6 rounded-full">
+              {hasFilters ? <Search className="h-16 w-16 text-primary/40" /> : <FileText className="h-16 w-16 text-primary/40" />}
+            </div>
+          </div>
+          <div className="space-y-2">
+            <h3 className="text-xl font-semibold text-gray-700">
+              {hasFilters ? "Aucun résultat trouvé" : "Aucun avocat enregistré"}
+            </h3>
+            <p className="text-sm text-muted-foreground max-w-sm">
+              {hasFilters ? "Essayez d'ajuster vos filtres de recherche pour trouver ce que vous cherchez." : "Commencez par créer votre premier avocat pour le voir apparaître ici."}
+            </p>
+          </div>
+          {hasFilters && (
+            <Button variant="outline" size="sm" onClick={onClearFilters}>
+              Réinitialiser les filtres
+            </Button>
+          )}
+        </div>
+      </TableCell>
+    </TableRow>
+  </TableBody>
+);
+
+export function LawyerTable({ lawyers, onEdit, onDelete, isLoading = false }: LawyerTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
+  const [sortField, setSortField] = useState<SortField>("nom");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [lawyerToDelete, setLawyerToDelete] = useState<number | null>(null);
 
   const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    } else {
+    if (sortField === field) setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    else {
       setSortField(field);
       setSortOrder("asc");
     }
   };
 
+  const clearFilters = () => setSearchTerm("");
+
   const filteredAndSortedLawyers = lawyers
-    .filter(lawyer => 
-      `${lawyer.firstName} ${lawyer.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    .filter((lawyer) =>
+      `${lawyer.prenom} ${lawyer.nom}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
       lawyer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       lawyer.region.toLowerCase().includes(searchTerm.toLowerCase())
     )
     .sort((a, b) => {
       const multiplier = sortOrder === "asc" ? 1 : -1;
-      
-      if (sortField === "registrationDate") {
-        return multiplier * (new Date(a.registrationDate).getTime() - new Date(b.registrationDate).getTime());
-      }
-      
-      if (sortField === "activeCases") {
-        return multiplier * (a.activeCases - b.activeCases);
-      }
-      
+      if (sortField === "dateInscription") return multiplier * (new Date(a.dateInscription).getTime() - new Date(b.dateInscription).getTime());
+      if (sortField === "affairesEnCours") return multiplier * (a.affairesEnCours - b.affairesEnCours);
       return multiplier * a[sortField].localeCompare(b[sortField]);
     });
 
-  return (
-    <div className="space-y-4">
-      <Input
-        placeholder="Rechercher par nom, email ou région..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        className="max-w-md"
-      />
+  const getPerformanceBadge = (lawyer: Lawyer) => {
+    const total = lawyer.affairesAcceptees + lawyer.affairesRefusees;
+    if (total === 0) return { text: "Nouveau", color: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300", icon: Minus };
+    const acceptanceRate = (lawyer.affairesAcceptees / total) * 100;
+    if (acceptanceRate >= 80) return { text: `${acceptanceRate.toFixed(0)}%`, color: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400", icon: TrendingUp };
+    if (acceptanceRate >= 50) return { text: `${acceptanceRate.toFixed(0)}%`, color: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400", icon: Minus };
+    return { text: `${acceptanceRate.toFixed(0)}%`, color: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400", icon: TrendingDown };
+  };
 
-      <div className="rounded-lg border bg-card shadow-card overflow-hidden">
+  const getSortIcon = (field: SortField) => {
+    if (sortField !== field) return <ArrowUpDown className="ml-2 h-4 w-4 opacity-50" />;
+    return sortOrder === "asc" ? <ArrowUpDown className="ml-2 h-4 w-4 text-primary" /> : <ArrowUpDown className="ml-2 h-4 w-4 text-primary rotate-180" />;
+  };
+
+  const handleDeleteClick = (id: number) => {
+    setLawyerToDelete(id);
+    setDeleteModalOpen(true);
+  };
+
+  const hasFilters = searchTerm !== "";
+  const hasData = filteredAndSortedLawyers.length > 0;
+
+  return (
+    <div className="space-y-6">
+      {/* Search & Filters */}
+      <div className="flex gap-4 flex-wrap items-center bg-gradient-to-r from-gray-50 to-white p-4 rounded-xl border border-gray-200 shadow-sm">
+        <div className="flex-1 min-w-[300px] relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Input
+            placeholder="Rechercher par nom, email ou région..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 bg-white border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+          />
+        </div>
+        {hasFilters && (
+          <div className="text-sm text-muted-foreground bg-white px-3 py-2 rounded-lg border border-gray-200">
+            <span className="font-medium">{filteredAndSortedLawyers.length} résultat{filteredAndSortedLawyers.length !== 1 ? "s" : ""}</span>
+          </div>
+        )}
+      </div>
+
+      {/* Table */}
+      <div className="rounded-xl border border-gray-200 bg-white shadow-lg overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="bg-muted/50">
-              <TableHead>
-                <Button variant="ghost" size="sm" onClick={() => handleSort("lastName")} className="font-semibold">
-                  Nom Prénom <ArrowUpDown className="ml-2 h-4 w-4" />
+            <TableRow className="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-200">
+              <TableHead className="font-bold">
+                <Button variant="ghost" size="sm" onClick={() => handleSort("nom")} className="font-bold hover:bg-gray-100 transition-colors">
+                  Nom & Prénom {getSortIcon("nom")}
                 </Button>
               </TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Téléphone</TableHead>
-              <TableHead>
-                <Button variant="ghost" size="sm" onClick={() => handleSort("region")} className="font-semibold">
-                  Région <ArrowUpDown className="ml-2 h-4 w-4" />
+              <TableHead className="font-bold">Contact</TableHead>
+              <TableHead className="font-bold">
+                <Button variant="ghost" size="sm" onClick={() => handleSort("region")} className="font-bold hover:bg-gray-100 transition-colors">
+                  Région {getSortIcon("region")}
                 </Button>
               </TableHead>
-              <TableHead>
-                <Button variant="ghost" size="sm" onClick={() => handleSort("registrationDate")} className="font-semibold">
-                  Date d'inscription <ArrowUpDown className="ml-2 h-4 w-4" />
+              <TableHead className="font-bold">
+                <Button variant="ghost" size="sm" onClick={() => handleSort("dateInscription")} className="font-bold hover:bg-gray-100 transition-colors">
+                  Inscription {getSortIcon("dateInscription")}
                 </Button>
               </TableHead>
-              <TableHead className="text-center">
-                <Button variant="ghost" size="sm" onClick={() => handleSort("activeCases")} className="font-semibold">
-                  Affaires <ArrowUpDown className="ml-2 h-4 w-4" />
+              <TableHead className="font-bold">
+                <Button variant="ghost" size="sm" onClick={() => handleSort("affairesEnCours")} className="font-bold hover:bg-gray-100 transition-colors">
+                  Affaires {getSortIcon("affairesEnCours")}
                 </Button>
               </TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead className="font-bold">Performance</TableHead>
+              <TableHead className="text-right font-bold">Actions</TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>
-            {filteredAndSortedLawyers.map((lawyer) => (
-              <TableRow key={lawyer.id} className="hover:bg-muted/30 transition-colors">
-                <TableCell className="font-medium">
-                  {lawyer.firstName} {lawyer.lastName}
-                </TableCell>
-                <TableCell className="text-muted-foreground">{lawyer.email}</TableCell>
-                <TableCell className="text-muted-foreground">{lawyer.phone}</TableCell>
-                <TableCell>{lawyer.region}</TableCell>
-                <TableCell className="text-muted-foreground">
-                  {new Date(lawyer.registrationDate).toLocaleDateString('fr-FR')}
-                </TableCell>
-                <TableCell className="text-center">
-                  <div className="space-y-1">
-                    <div className="text-sm">
-                      <span className="inline-flex items-center px-2 py-1 rounded-md bg-primary/10 text-primary font-medium">
-                        {lawyer.activeCases} en cours
-                      </span>
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      {lawyer.acceptedCases} acceptées · {lawyer.rejectedCases} refusées
-                    </div>
-                  </div>
-                </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex justify-end gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => onEdit(lawyer)}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => onDelete(lawyer.id)}
-                    >
-                      <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
+
+          {isLoading ? (
+            <TableSkeleton />
+          ) : !hasData ? (
+            <EmptyState hasFilters={hasFilters} onClearFilters={clearFilters} />
+          ) : (
+            <TableBody>
+              {filteredAndSortedLawyers.map((lawyer) => {
+                const badge = getPerformanceBadge(lawyer);
+                const Icon = badge.icon;
+
+                return (
+                  <TableRow key={lawyer.id} className="hover:bg-gradient-to-r hover:from-primary/5 hover:to-transparent transition-all duration-200 border-b border-gray-100">
+                    <TableCell className="font-medium">
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-semibold text-sm">
+                          {lawyer.prenom.charAt(0)}
+                          {lawyer.nom.charAt(0)}
+                        </div>
+                        <div>
+                          <div className="font-semibold text-gray-900">{lawyer.nom} {lawyer.prenom}</div>
+                          <div className="text-xs text-gray-500 flex items-center gap-1">
+                            <Briefcase className="h-3 w-3" /> Avocat #{lawyer.id}
+                          </div>
+                        </div>
+                      </div>
+                    </TableCell>
+
+                    <TableCell>
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2 text-sm text-gray-700">
+                          <Mail className="h-3.5 w-3.5 text-gray-400" /> {lawyer.email}
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <Phone className="h-3.5 w-3.5 text-gray-400" /> {lawyer.telephone}
+                        </div>
+                      </div>
+                    </TableCell>
+
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <MapPin className="h-4 w-4 text-blue-500" />
+                        <span className="font-medium text-gray-700">{lawyer.region}</span>
+                      </div>
+                    </TableCell>
+
+                    <TableCell>
+                      <div className="flex items-center gap-2 text-sm">
+                        <Calendar className="h-4 w-4 text-gray-400" />
+                        <span className="text-gray-600">{new Date(lawyer.dateInscription).toLocaleDateString("fr-FR")}</span>
+                      </div>
+                    </TableCell>
+
+                   <TableCell> <div className="space-y-1"> <div className="flex items-center gap-2"> <div className="px-2.5 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs font-semibold"> {lawyer.affairesEnCours} en cours </div> </div> <div className="flex gap-2 text-xs"> <span className="text-emerald-600 dark:text-emerald-400 font-medium"> ✓ {lawyer.affairesAcceptees} </span> <span className="text-gray-400">·</span> <span className="text-red-600 dark:text-red-400 font-medium"> ✗ {lawyer.affairesRefusees} </span> </div> </div> </TableCell>
+
+                    <TableCell>
+                      <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full ${badge.color} text-xs font-semibold`}>
+                        <Icon className="h-3.5 w-3.5" /> {badge.text}
+                      </div>
+                    </TableCell>
+
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button variant="outline" size="sm" onClick={() => onEdit(lawyer)} className="hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700 transition-all">
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={() => handleDeleteClick(lawyer.id)} className="hover:bg-red-600 shadow-md hover:shadow-lg transition-all">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          )}
         </Table>
       </div>
+
+      {lawyerToDelete && (
+        <DeleteLawyerModal
+          isOpen={deleteModalOpen}
+          onClose={() => {
+            setDeleteModalOpen(false);
+            setLawyerToDelete(null);
+          }}
+          onConfirm={() => {
+            onDelete(lawyerToDelete);
+            setDeleteModalOpen(false);
+            setLawyerToDelete(null);
+          }}
+          lawyerName={lawyers.find((l) => l.id === lawyerToDelete)?.nom + " " + lawyers.find((l) => l.id === lawyerToDelete)?.prenom}
+        />
+      )}
     </div>
   );
 }

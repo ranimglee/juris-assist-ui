@@ -1,34 +1,37 @@
 export interface Lawyer {
-  id: string;
-  firstName: string;
-  lastName: string;
+  id: number;
+  prenom: string;
+  nom: string;
   email: string;
-  phone: string;
+  telephone: string;
   region: string;
-  address: string;
-  registrationDate: string;
-  acceptedCases: number;
-  rejectedCases: number;
-  activeCases: number;
+  adresse: string;
+  dateInscription: string | null;
+  affairesAcceptees?: number;
+  affairesRefusees?: number;
+  affairesEnCours?: number;
+  lastAssignedAt?: string | null;
 }
 
-export type CaseType = "criminel" | "enquête" | "civil";
+
+export type CaseType = "criminel" | "civil" | "enquête";
+
 export type CaseStatus = "pending" | "assigned" | "accepted" | "rejected" | "completed";
 
-export interface Case {
-  id: string;
+export type Case = {
+  id: number;
   caseNumber: string;
   title: string;
   type: CaseType;
-  description: string;
+  description: string; // nomAccuse
   createdAt: string;
   courtDate: string;
   status: CaseStatus;
   assignedLawyerId?: string;
-  assignedLawyerName?: string;
-  notificationSent?: boolean;
-  notificationDate?: string;
-}
+  assignedLawyerName?: string; // on peut récupérer le nom depuis API avocat
+  notificationSent?: string
+};
+
 
 export interface DashboardStats {
   totalLawyers: number;
@@ -36,3 +39,10 @@ export interface DashboardStats {
   activeCases: number;
   completedCases: number;
 }
+export type AffaireFormData = {
+  numero: string;
+  titre: string;
+  type: CaseType;
+  nomAccuse: string;
+  dateTribunal: string;
+};

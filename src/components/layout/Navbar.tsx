@@ -8,33 +8,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
-import { ProfileDialog } from "./ProfileDialog";
 
 export function Navbar() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [profileOpen, setProfileOpen] = useState(false);
 
-  const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      toast({
-        title: "Erreur",
-        description: "Impossible de se déconnecter",
-        variant: "destructive",
-      });
-    } else {
-      toast({
-        title: "Déconnecté",
-        description: "Vous avez été déconnecté avec succès",
-      });
-      navigate("/auth");
-    }
-  };
+ 
 
   return (
     <>
@@ -60,7 +43,7 @@ export function Navbar() {
               <span>Changer le mot de passe</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout} className="text-destructive">
+            <DropdownMenuItem  className="text-destructive">
               <LogOut className="mr-2 h-4 w-4" />
               <span>Se déconnecter</span>
             </DropdownMenuItem>
@@ -68,7 +51,6 @@ export function Navbar() {
         </DropdownMenu>
       </header>
 
-      <ProfileDialog open={profileOpen} onOpenChange={setProfileOpen} />
     </>
   );
 }

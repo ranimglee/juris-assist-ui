@@ -1,145 +1,265 @@
 import { useState, useEffect } from "react";
-import { Case, CaseType } from "@/types";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { CaseType } from "@/types";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { FileText, Scale, User, Calendar, Hash, AlertCircle } from "lucide-react";
 
 interface CaseModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (caseData: Omit<Case, "id">) => void;
-  caseData?: Case;
+  onSave: (data: {
+    numero: string;
+    titre: string;
+    type: CaseType;
+    nomAccuse: string;
+    dateTribunal: string;
+  }) => void;
+  caseData?: any;
 }
 
 const caseTypes: CaseType[] = ["criminel", "enquête", "civil"];
 
 export function CaseModal({ isOpen, onClose, onSave, caseData }: CaseModalProps) {
   const [formData, setFormData] = useState({
-    caseNumber: "",
-    title: "",
+    numero: "",
+    titre: "",
     type: "criminel" as CaseType,
-    description: "",
-    courtDate: "",
+    nomAccuse: "",
+    dateTribunal: ""
   });
+
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     if (caseData) {
       setFormData({
-        caseNumber: caseData.caseNumber,
-        title: caseData.title,
-        type: caseData.type,
-        description: caseData.description,
-        courtDate: caseData.courtDate,
+        numero: caseData.caseNumber || "",
+        titre: caseData.title || "",
+        type: caseData.type || "civil",
+        nomAccuse: caseData.description || "",
+        dateTribunal: caseData.courtDate?.split("T")[0] || ""
       });
     } else {
       setFormData({
-        caseNumber: "",
-        title: "",
-        type: "criminel",
-        description: "",
-        courtDate: "",
+        numero: "",
+        titre: "",
+        type: "civil",
+        nomAccuse: "",
+        dateTribunal: ""
       });
     }
+    setErrors({});
+    setTouched({});
   }, [caseData, isOpen]);
+
+  const validateField = (name: string, value: string) => {
+    switch (name) {
+      case "numero":
+        if (!value) return "Numéro obligatoire";
+        break;
+      case "titre":
+        if (!value) return "Titre obligatoire";
+        if (value.length < 3) return "Minimum 3 caractères";
+        break;
+      case "nomAccuse":
+        if (!value) return "Nom de l'accusé obligatoire";
+        if (value.length < 2) return "Minimum 2 caractères";
+        break;
+      case "dateTribunal":
+        if (!value) return "Date du tribunal obligatoire";
+        break;
+    }
+    return "";
+  };
+
+  const handleBlur = (field: string) => {
+    setTouched({ ...touched, [field]: true });
+    const error = validateField(field, formData[field as keyof typeof formData]);
+    setErrors({ ...errors, [field]: error });
+  };
+
+  const handleChange = (field: string, value: string) => {
+    setFormData({ ...formData, [field]: value });
+    if (touched[field]) {
+      const error = validateField(field, value);
+      setErrors({ ...errors, [field]: error });
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave({
-      ...formData,
-      caseNumber: formData.caseNumber || `AFF-${Date.now()}`,
-      createdAt: caseData?.createdAt || new Date().toISOString().split('T')[0],
-      status: caseData?.status || "pending",
-      assignedLawyerId: caseData?.assignedLawyerId,
-      assignedLawyerName: caseData?.assignedLawyerName,
-      notificationSent: caseData?.notificationSent,
-      notificationDate: caseData?.notificationDate,
+
+    // Validate all fields
+    const newErrors: Record<string, string> = {};
+    Object.keys(formData).forEach((key) => {
+      const error = validateField(key, formData[key as keyof typeof formData]);
+      if (error) newErrors[key] = error;
     });
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      setTouched(Object.keys(formData).reduce((acc, key) => ({ ...acc, [key]: true }), {}));
+      return;
+    }
+
+    onSave({
+      numero: formData.numero,
+      titre: formData.titre,
+      type: formData.type,
+      nomAccuse: formData.nomAccuse,
+      dateTribunal: formData.dateTribunal + "T00:00:00"
+    });
+
     onClose();
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px]">
-        <DialogHeader>
-          <DialogTitle className="text-2xl">
-            {caseData ? "Modifier l'affaire" : "Créer une affaire"}
-          </DialogTitle>
+      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
+        <DialogHeader className="space-y-3 pb-4 border-b border-gray-200 dark:border-gray-800">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg">
+              <Scale className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <DialogTitle className="text-2xl font-bold">
+                {caseData ? "Modifier l'affaire" : "Créer une nouvelle affaire"}
+              </DialogTitle>
+            </div>
+          </div>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="caseNumber">Numéro d'affaire</Label>
-              <Input
-                id="caseNumber"
-                value={formData.caseNumber}
-                onChange={(e) => setFormData({ ...formData, caseNumber: e.target.value })}
-                placeholder="Généré automatiquement"
-              />
-            </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="type">Type *</Label>
-              <Select
-                value={formData.type}
-                onValueChange={(value) => setFormData({ ...formData, type: value as CaseType })}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {caseTypes.map((type) => (
-                    <SelectItem key={type} value={type}>
-                      {type.charAt(0).toUpperCase() + type.slice(1)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
+        <form onSubmit={handleSubmit} className="px-8 py-6 space-y-6 bg-white">
+          {/* Numéro */}
           <div className="space-y-2">
-            <Label htmlFor="title">Titre *</Label>
+            <Label htmlFor="numero" className="flex items-center gap-2 text-sm font-semibold">
+              <Hash className="w-4 h-4" /> Numéro <span className="text-red-500">*</span>
+            </Label>
             <Input
-              id="title"
-              value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              required
-              placeholder="Ex: Litige commercial - Contrat non respecté"
+              id="numero"
+              value={formData.numero}
+              onChange={(e) => handleChange("numero", e.target.value)}
+              onBlur={() => handleBlur("numero")}
+              placeholder="Ex: AFF-2024-001"
+              className={`h-11 transition-all ${
+                errors.numero && touched.numero
+                  ? "border-red-500 focus:ring-red-500"
+                  : "focus:ring-blue-500"
+              }`}
             />
+            {errors.numero && touched.numero && (
+              <div className="flex items-center gap-1 text-xs text-red-600">
+                <AlertCircle className="h-3 w-3" /> {errors.numero}
+              </div>
+            )}
           </div>
 
+          {/* Titre */}
           <div className="space-y-2">
-            <Label htmlFor="courtDate">Audience au tribunal *</Label>
+            <Label htmlFor="titre" className="flex items-center gap-2 text-sm font-semibold">
+              <FileText className="w-4 h-4" /> Titre <span className="text-red-500">*</span>
+            </Label>
             <Input
-              id="courtDate"
+              id="titre"
+              value={formData.titre}
+              onChange={(e) => handleChange("titre", e.target.value)}
+              onBlur={() => handleBlur("titre")}
+              placeholder="Ex: Affaire de fraude fiscale"
+              className={`h-11 transition-all ${
+                errors.titre && touched.titre
+                  ? "border-red-500 focus:ring-red-500"
+                  : "focus:ring-blue-500"
+              }`}
+            />
+            {errors.titre && touched.titre && (
+              <div className="flex items-center gap-1 text-xs text-red-600">
+                <AlertCircle className="h-3 w-3" /> {errors.titre}
+              </div>
+            )}
+          </div>
+
+          {/* Type */}
+          <div className="space-y-2">
+            <Label className="flex items-center gap-2 text-sm font-semibold">
+              <Scale className="w-4 h-4" /> Type d'affaire
+            </Label>
+            <Select
+              value={formData.type}
+              onValueChange={(value) => setFormData({ ...formData, type: value as CaseType })}
+            >
+              <SelectTrigger className="h-11 focus:ring-blue-500 transition-all">
+                <SelectValue placeholder="Sélectionnez un type" />
+              </SelectTrigger>
+              <SelectContent>
+                {caseTypes.map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {type.charAt(0).toUpperCase() + type.slice(1)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Nom accusé */}
+          <div className="space-y-2">
+            <Label htmlFor="nomAccuse" className="flex items-center gap-2 text-sm font-semibold">
+              <User className="w-4 h-4" /> Nom de l'accusé <span className="text-red-500">*</span>
+            </Label>
+            <Input
+              id="nomAccuse"
+              value={formData.nomAccuse}
+              onChange={(e) => handleChange("nomAccuse", e.target.value)}
+              onBlur={() => handleBlur("nomAccuse")}
+              placeholder="Ex: Jean Dupont"
+              className={`h-11 transition-all ${
+                errors.nomAccuse && touched.nomAccuse
+                  ? "border-red-500 focus:ring-red-500"
+                  : "focus:ring-blue-500"
+              }`}
+            />
+            {errors.nomAccuse && touched.nomAccuse && (
+              <div className="flex items-center gap-1 text-xs text-red-600">
+                <AlertCircle className="h-3 w-3" /> {errors.nomAccuse}
+              </div>
+            )}
+          </div>
+
+          {/* Date tribunal */}
+          <div className="space-y-2">
+            <Label htmlFor="dateTribunal" className="flex items-center gap-2 text-sm font-semibold">
+              <Calendar className="w-4 h-4" /> Date du tribunal <span className="text-red-500">*</span>
+            </Label>
+            <Input
+              id="dateTribunal"
               type="date"
-              value={formData.courtDate}
-              onChange={(e) => setFormData({ ...formData, courtDate: e.target.value })}
-              required
+              value={formData.dateTribunal}
+              onChange={(e) => handleChange("dateTribunal", e.target.value)}
+              onBlur={() => handleBlur("dateTribunal")}
+              className={`h-11 transition-all ${
+                errors.dateTribunal && touched.dateTribunal
+                  ? "border-red-500 focus:ring-red-500"
+                  : "focus:ring-blue-500"
+              }`}
             />
+            {errors.dateTribunal && touched.dateTribunal && (
+              <div className="flex items-center gap-1 text-xs text-red-600">
+                <AlertCircle className="h-3 w-3" /> {errors.dateTribunal}
+              </div>
+            )}
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="description">Description *</Label>
-            <Textarea
-              id="description"
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              required
-              rows={4}
-              placeholder="Décrivez l'affaire en détails..."
-            />
-          </div>
-
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose}>
+          <DialogFooter className="gap-3 pt-4">
+            <Button type="button" variant="outline" onClick={onClose} className="h-11 px-6">
               Annuler
             </Button>
-            <Button type="submit" className="gradient-accent">
-              {caseData ? "Modifier" : "Créer"}
+            <Button type="submit" className="gradient-accent h-11 px-8 font-semibold">
+              Enregistrer
             </Button>
           </DialogFooter>
         </form>

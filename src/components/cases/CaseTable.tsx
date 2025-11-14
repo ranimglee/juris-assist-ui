@@ -3,17 +3,23 @@ import { Case, CaseStatus } from "@/types";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Pencil, Send, CheckCircle, XCircle, Clock, AlertCircle } from "lucide-react";
+import { Pencil, Trash2, Send, CheckCircle, XCircle, Clock, AlertCircle, ArrowUpDown, FileText, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { DeleteModal } from "./DeleteModal";
 
 interface CaseTableProps {
   cases: Case[];
   onEdit: (caseItem: Case) => void;
-  onAssign: (caseId: string) => void;
+  onAssign: (caseId: number) => void;
+  onDelete: (caseId: number) => void;
   getLawyerName: (lawyerId?: string) => string;
+  isLoading?: boolean;
 }
 
-const statusConfig: Record<CaseStatus, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: React.ElementType }> = {
+const statusConfig: Record<
+  CaseStatus,
+  { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: React.ElementType }
+> = {
   pending: { label: "En attente", variant: "outline", icon: Clock },
   assigned: { label: "Assignée", variant: "secondary", icon: AlertCircle },
   accepted: { label: "Acceptée", variant: "default", icon: CheckCircle },
@@ -21,112 +27,386 @@ const statusConfig: Record<CaseStatus, { label: string; variant: "default" | "se
   completed: { label: "Terminée", variant: "default", icon: CheckCircle },
 };
 
-export function CaseTable({ cases, onEdit, onAssign, getLawyerName }: CaseTableProps) {
-  const [searchTerm, setSearchTerm] = useState("");
+// Loading skeleton component
+const TableSkeleton = () => (
+  <TableBody>
+    {[...Array(5)].map((_, i) => (
+      <TableRow key={i}>
+        {[...Array(8)].map((_, j) => (
+          <TableCell key={j}>
+            <div 
+              className="h-4 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded animate-pulse" 
+              style={{ 
+                animationDelay: `${j * 0.1}s`,
+                animationDuration: '1.5s',
+                animationIterationCount: 'infinite'
+              }} 
+            />
+          </TableCell>
+        ))}
+      </TableRow>
+    ))}
+  </TableBody>
+);
 
-  const filteredCases = cases.filter(caseItem =>
-    caseItem.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    caseItem.type.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+// Empty state component
+const EmptyState = ({ hasFilters, onClearFilters }: { hasFilters: boolean; onClearFilters: () => void }) => (
+  <TableBody>
+    <TableRow>
+      <TableCell colSpan={8} className="h-96">
+        <div className="flex flex-col items-center justify-center space-y-4 text-center py-12">
+          <div className="relative">
+            <div className="absolute inset-0 bg-primary/5 blur-3xl rounded-full" />
+            <div className="relative bg-gradient-to-br from-primary/10 to-primary/5 p-6 rounded-full">
+              {hasFilters ? (
+                <Search className="h-16 w-16 text-primary/40" />
+              ) : (
+                <FileText className="h-16 w-16 text-primary/40" />
+              )}
+            </div>
+          </div>
+          <div className="space-y-2">
+            <h3 className="text-xl font-semibold text-gray-700">
+              {hasFilters ? "Aucun résultat trouvé" : "Aucune affaire enregistrée"}
+            </h3>
+            <p className="text-sm text-muted-foreground max-w-sm">
+              {hasFilters 
+                ? "Essayez d'ajuster vos filtres de recherche pour trouver ce que vous cherchez."
+                : "Commencez par créer votre première affaire pour la voir apparaître ici."
+              }
+            </p>
+          </div>
+          {hasFilters && (
+            <Button variant="outline" size="sm" onClick={onClearFilters}>
+              Réinitialiser les filtres
+            </Button>
+          )}
+        </div>
+      </TableCell>
+    </TableRow>
+  </TableBody>
+);
+
+export function CaseTable({ cases, onEdit, onAssign, onDelete, getLawyerName, isLoading = false }: CaseTableProps) {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState<CaseStatus | "all">("all");
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [caseToDelete, setCaseToDelete] = useState<number | null>(null);
+  const [sortField, setSortField] = useState<keyof Case | "courtDate" | "status" | "assignedLawyerName">("caseNumber");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+
+  const handleDeleteClick = (caseId: number) => {
+    setCaseToDelete(caseId);
+    setDeleteModalOpen(true);
+  };
+
+  const handleSort = (field: keyof Case | "courtDate" | "status" | "assignedLawyerName") => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortOrder("asc");
+    }
+  };
+
+  const clearFilters = () => {
+    setSearchTerm("");
+    setSelectedStatus("all");
+  };
+
+  const filteredAndSortedCases = cases
+    .filter((caseItem) => {
+      if (selectedStatus !== "all" && caseItem.status !== selectedStatus) return false;
+
+      const lawyerName =
+        caseItem.assignedLawyerName || (caseItem.assignedLawyerId ? getLawyerName(caseItem.assignedLawyerId) : "");
+      return (
+        caseItem.caseNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        caseItem.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        caseItem.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        lawyerName.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    })
+    .sort((a, b) => {
+      const multiplier = sortOrder === "asc" ? 1 : -1;
+
+      if (sortField === "courtDate") {
+        return multiplier * ((a.courtDate ? new Date(a.courtDate).getTime() : 0) - (b.courtDate ? new Date(b.courtDate).getTime() : 0));
+      }
+
+      if (sortField === "status") {
+        return multiplier * a.status.localeCompare(b.status);
+      }
+
+      if (sortField === "assignedLawyerName") {
+        const aName = a.assignedLawyerName || (a.assignedLawyerId ? getLawyerName(a.assignedLawyerId) : "");
+        const bName = b.assignedLawyerName || (b.assignedLawyerId ? getLawyerName(b.assignedLawyerId) : "");
+        return multiplier * aName.localeCompare(bName);
+      }
+
+      const aValue = (a[sortField] as string) || "";
+      const bValue = (b[sortField] as string) || "";
+      return multiplier * aValue.localeCompare(bValue);
+    });
+
+  const hasFilters = searchTerm !== "" || selectedStatus !== "all";
+  const hasData = filteredAndSortedCases.length > 0;
 
   return (
-    <div className="space-y-4">
-      <Input
-        placeholder="Rechercher par titre ou type..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        className="max-w-md"
-      />
+    <div className="space-y-6">
+      {/* Loading bar */}
+      {isLoading && (
+        <div className="w-full h-1 bg-gray-200 rounded-full overflow-hidden">
+          <div 
+            className="h-full bg-gradient-to-r from-primary via-primary/60 to-primary"
+            style={{
+              width: '40%',
+              animation: 'loading 1.5s ease-in-out infinite'
+            }}
+          />
+        </div>
+      )}
 
-      <div className="rounded-lg border bg-card shadow-card overflow-hidden">
+      {/* Filters section with enhanced styling */}
+      <div className="flex gap-4 flex-wrap items-center bg-gradient-to-r from-gray-50 to-white p-4 rounded-xl border border-gray-200 shadow-sm">
+        <div className="flex-1 min-w-[300px] relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Input
+            placeholder="Rechercher par numéro, titre, type ou avocat..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 bg-white border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+          />
+        </div>
+        
+        <div className="relative">
+          <select
+            value={selectedStatus}
+            onChange={(e) => setSelectedStatus(e.target.value as CaseStatus | "all")}
+            className="appearance-none border border-gray-300 rounded-lg px-4 py-2 pr-10 bg-white text-sm font-medium shadow-sm hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all cursor-pointer"
+          >
+            <option value="all">Tous les statuts</option>
+            {Object.entries(statusConfig).map(([key, status]) => (
+              <option key={key} value={key}>
+                {status.label}
+              </option>
+            ))}
+          </select>
+          <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+            <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </span>
+        </div>
+
+        {(hasFilters || isLoading) && (
+          <div className="text-sm text-muted-foreground bg-white px-3 py-2 rounded-lg border border-gray-200">
+            {isLoading ? (
+              <span className="flex items-center gap-2">
+                <div className="h-3 w-3 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                Chargement...
+              </span>
+            ) : (
+              <span className="font-medium">
+                {filteredAndSortedCases.length} résultat{filteredAndSortedCases.length !== 1 ? "s" : ""}
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Enhanced table with better styling */}
+      <div className="rounded-xl border border-gray-200 bg-white shadow-lg overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="bg-muted/50">
-              <TableHead className="font-semibold">N° Affaire</TableHead>
-              <TableHead className="font-semibold">Titre</TableHead>
-              <TableHead className="font-semibold">Type</TableHead>
-              <TableHead className="font-semibold">Audience</TableHead>
-              <TableHead className="font-semibold">Statut</TableHead>
-              <TableHead className="font-semibold">Avocat assigné</TableHead>
-              <TableHead className="font-semibold">Notification</TableHead>
-              <TableHead className="text-right font-semibold">Actions</TableHead>
+            <TableRow className="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-200">
+              <TableHead className="font-bold">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => handleSort("caseNumber")} 
+                  className="font-bold hover:bg-gray-100
+ transition-colors"
+                >
+                  N° Affaire 
+                  <ArrowUpDown className={`ml-2 h-4 w-4 ${sortField === "caseNumber" ? "text-primary" : ""}`} />
+                </Button>
+              </TableHead>
+
+              <TableHead className="font-bold">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => handleSort("title")} 
+                  className="font-bold hover:bg-white/50 transition-colors"
+                >
+                  Titre 
+                  <ArrowUpDown className={`ml-2 h-4 w-4 ${sortField === "title" ? "text-primary" : ""}`} />
+                </Button>
+              </TableHead>
+
+              <TableHead className="font-bold">Type</TableHead>
+
+              <TableHead className="font-bold">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => handleSort("courtDate")} 
+                  className="font-bold hover:bg-white/50 transition-colors"
+                >
+                  Audience 
+                  <ArrowUpDown className={`ml-2 h-4 w-4 ${sortField === "courtDate" ? "text-primary" : ""}`} />
+                </Button>
+              </TableHead>
+
+              <TableHead className="font-bold">Statut</TableHead>
+
+              <TableHead className="font-bold">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => handleSort("assignedLawyerName")} 
+                  className="font-bold hover:bg-white/50 transition-colors"
+                >
+                  Avocat assigné 
+                  <ArrowUpDown className={`ml-2 h-4 w-4 ${sortField === "assignedLawyerName" ? "text-primary" : ""}`} />
+                </Button>
+              </TableHead>
+
+              <TableHead className="font-bold">Notification</TableHead>
+              <TableHead className="text-right font-bold">Actions</TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>
-            {filteredCases.map((caseItem) => {
-              const status = statusConfig[caseItem.status];
-              const StatusIcon = status.icon;
-              
-              return (
-                <TableRow key={caseItem.id} className="hover:bg-muted/30 transition-colors">
-                  <TableCell className="font-mono text-sm font-semibold">
-                    {caseItem.caseNumber}
-                  </TableCell>
-                  <TableCell className="font-medium max-w-xs">
-                    <div>
-                      <p className="font-semibold">{caseItem.title}</p>
-                      <p className="text-sm text-muted-foreground line-clamp-1">{caseItem.description}</p>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="outline">
-                      {caseItem.type.charAt(0).toUpperCase() + caseItem.type.slice(1)}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {new Date(caseItem.courtDate).toLocaleDateString('fr-FR')}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={status.variant} className="flex items-center gap-1 w-fit">
-                      <StatusIcon className="h-3 w-3" />
-                      {status.label}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    {caseItem.assignedLawyerName || (caseItem.assignedLawyerId ? getLawyerName(caseItem.assignedLawyerId) : null) ? (
-                      <span className="text-sm font-medium">{caseItem.assignedLawyerName || getLawyerName(caseItem.assignedLawyerId)}</span>
-                    ) : (
-                      <span className="text-sm text-muted-foreground italic">Non assigné</span>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    {caseItem.notificationSent ? (
-                      <div className="flex items-center gap-1 text-success">
-                        <CheckCircle className="h-4 w-4" />
-                        <span className="text-sm">Envoyée</span>
+
+          {isLoading ? (
+            <TableSkeleton />
+          ) : !hasData ? (
+            <EmptyState hasFilters={hasFilters} onClearFilters={clearFilters} />
+          ) : (
+            <TableBody>
+              {filteredAndSortedCases.map((caseItem) => {
+                const status = statusConfig[caseItem.status];
+                const StatusIcon = status.icon;
+
+                return (
+                  <TableRow 
+                    key={caseItem.id} 
+                    className="hover:bg-gradient-to-r hover:from-primary/5 hover:to-transparent transition-all duration-200 border-b border-gray-100"
+                  >
+                    <TableCell className="font-mono text-sm font-bold text-primary">
+                      {caseItem.caseNumber}
+                    </TableCell>
+                    <TableCell className="font-medium max-w-xs">
+                      <div className="space-y-1">
+                        <p className="font-semibold text-gray-900">{caseItem.title}</p>
+                        <p className="text-xs text-muted-foreground line-clamp-1">{caseItem.description}</p>
                       </div>
-                    ) : (
-                      <span className="text-sm text-muted-foreground">-</span>
-                    )}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => onEdit(caseItem)}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      {caseItem.status === "pending" && (
-                        <Button
-                          variant="default"
-                          size="sm"
-                          onClick={() => onAssign(caseItem.id)}
-                          className="gradient-accent"
-                        >
-                          <Send className="h-4 w-4 mr-1" />
-                          Assigner
-                        </Button>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className="font-medium bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 text-blue-700">
+                        {caseItem.type.charAt(0).toUpperCase() + caseItem.type.slice(1)}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground font-medium">
+                      {caseItem.courtDate ? new Date(caseItem.courtDate).toLocaleDateString("fr-FR") : "-"}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={status.variant} className="flex items-center gap-1.5 w-fit font-medium shadow-sm">
+                        <StatusIcon className="h-3.5 w-3.5" />
+                        {status.label}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {caseItem.assignedLawyerName ? (
+                        <span className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-white text-xs font-bold">
+                            {caseItem.assignedLawyerName.charAt(0).toUpperCase()}
+                          </div>
+                          {caseItem.assignedLawyerName}
+                        </span>
+                      ) : caseItem.assignedLawyerId ? (
+                        <span className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-white text-xs font-bold">
+                            {getLawyerName(caseItem.assignedLawyerId).charAt(0).toUpperCase()}
+                          </div>
+                          {getLawyerName(caseItem.assignedLawyerId)}
+                        </span>
+                      ) : (
+                        <span className="text-sm text-muted-foreground italic flex items-center gap-2">
+                          <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                            <span className="text-xs text-gray-400">?</span>
+                          </div>
+                          Non assigné
+                        </span>
                       )}
-                    </div>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
+                    </TableCell>
+                    <TableCell>
+                      {caseItem.notificationSent ? (
+                        <div className="flex items-center gap-1.5 text-green-600 bg-green-50 px-2 py-1 rounded-full w-fit">
+                          <CheckCircle className="h-4 w-4" />
+                          <span className="text-xs font-medium">Envoyée</span>
+                        </div>
+                      ) : (
+                        <span className="text-sm text-muted-foreground">-</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => onEdit(caseItem)}
+                          className="hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700 transition-all"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        {caseItem.status === "pending" && (
+                         <Button
+  variant="default"
+  size="sm"
+  onClick={() => onAssign(caseItem.id)}
+className="gradient-accent">
+  <Send className="h-4 w-4 mr-1" />
+  Assigner
+</Button>
+
+                        )}
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => handleDeleteClick(caseItem.id)}
+                          className="hover:bg-red-600 shadow-md hover:shadow-lg transition-all"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          )}
         </Table>
       </div>
+
+      {caseToDelete && (
+        <DeleteModal
+          isOpen={deleteModalOpen}
+          onClose={() => {
+            setDeleteModalOpen(false);
+            setCaseToDelete(null);
+          }}
+          onConfirm={() => {
+            onDelete(caseToDelete);
+            setDeleteModalOpen(false);
+            setCaseToDelete(null);
+          }}
+          caseNumber={cases.find((c) => c.id === caseToDelete)?.caseNumber}
+        />
+      )}
+
+   
+
     </div>
   );
 }

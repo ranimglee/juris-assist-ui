@@ -22,10 +22,11 @@ export default function Dashboard() {
     <Layout>
       <div className="p-8 space-y-8 bg-gradient-to-br from-background to-muted/30 min-h-screen">
         <div className="animate-fade-in">
-          <h1 className="text-4xl font-bold text-foreground bg-gradient-primary bg-clip-text text-transparent">
+          <h1 className="text-4xl font-bold text-foreground bg-gradient-primary bg-clip-text text-black">
             Tableau de bord
           </h1>
           <p className="text-muted-foreground mt-2 text-lg">Vue d'ensemble de votre gestion juridique</p>
+          
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-fade-in">

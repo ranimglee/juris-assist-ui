@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Pencil, Trash2, Send, CheckCircle, XCircle, Clock, AlertCircle, ArrowUpDown, FileText, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { DeleteModal } from "./DeleteModal";
+import PdfModal from "./PdfModal";
 
 interface CaseTableProps {
   cases: Case[];
@@ -13,6 +14,7 @@ interface CaseTableProps {
   onAssign: (caseId: number) => void;
   onDelete: (caseId: number) => void;
   getLawyerName: (lawyerId?: string) => string;
+
   isLoading?: boolean;
 }
 
@@ -87,18 +89,26 @@ const EmptyState = ({ hasFilters, onClearFilters }: { hasFilters: boolean; onCle
   </TableBody>
 );
 
-export function CaseTable({ cases, onEdit, onAssign, onDelete, getLawyerName, isLoading = false }: CaseTableProps) {
+export function CaseTable({ cases, onEdit, onDelete, getLawyerName, isLoading = false }: CaseTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<CaseStatus | "all">("all");
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [caseToDelete, setCaseToDelete] = useState<number | null>(null);
   const [sortField, setSortField] = useState<keyof Case | "courtDate" | "status" | "assignedLawyerName">("caseNumber");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [selectedCase, setSelectedCase] = useState<Case | null>(null);
+  const [openPdf, setOpenPdf] = useState(false);
 
   const handleDeleteClick = (caseId: number) => {
     setCaseToDelete(caseId);
     setDeleteModalOpen(true);
   };
+
+  const handleViewPdf = (caseItem: Case) => {
+    setSelectedCase(caseItem);
+    setOpenPdf(true);
+};
+
 
   const handleSort = (field: keyof Case | "courtDate" | "status" | "assignedLawyerName") => {
     if (sortField === field) {
@@ -273,7 +283,6 @@ export function CaseTable({ cases, onEdit, onAssign, onDelete, getLawyerName, is
                 </Button>
               </TableHead>
 
-              <TableHead className="font-bold">Notification</TableHead>
               <TableHead className="text-right font-bold">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -340,16 +349,7 @@ export function CaseTable({ cases, onEdit, onAssign, onDelete, getLawyerName, is
                         </span>
                       )}
                     </TableCell>
-                    <TableCell>
-                      {caseItem.notificationSent ? (
-                        <div className="flex items-center gap-1.5 text-green-600 bg-green-50 px-2 py-1 rounded-full w-fit">
-                          <CheckCircle className="h-4 w-4" />
-                          <span className="text-xs font-medium">Envoyée</span>
-                        </div>
-                      ) : (
-                        <span className="text-sm text-muted-foreground">-</span>
-                      )}
-                    </TableCell>
+                   
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
                         <Button 
@@ -360,17 +360,20 @@ export function CaseTable({ cases, onEdit, onAssign, onDelete, getLawyerName, is
                         >
                           <Pencil className="h-4 w-4" />
                         </Button>
-                        {caseItem.status === "pending" && (
-                         <Button
-  variant="default"
-  size="sm"
-  onClick={() => onAssign(caseItem.id)}
-className="gradient-accent">
-  <Send className="h-4 w-4 mr-1" />
-  Assigner
+                       
+                  
+<Button 
+  variant="outline" 
+  size="sm" 
+  onClick={() => handleViewPdf(caseItem)}
+  className="hover:bg-purple-50 hover:border-purple-300 hover:text-purple-700 transition-all"
+>
+  <FileText className="h-4 w-4" />
 </Button>
 
-                        )}
+
+
+                    
                         <Button 
                           variant="outline" 
                           size="sm" 
@@ -404,6 +407,13 @@ className="gradient-accent">
           caseNumber={cases.find((c) => c.id === caseToDelete)?.caseNumber}
         />
       )}
+{selectedCase && (
+  <PdfModal
+    isOpen={openPdf}
+    onClose={() => setOpenPdf(false)}
+    caseItem={selectedCase}
+  />
+)}
 
    
 

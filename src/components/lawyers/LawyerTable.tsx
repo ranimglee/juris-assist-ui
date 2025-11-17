@@ -3,9 +3,9 @@ import { Lawyer } from "@/types";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Pencil, Trash2, ArrowUpDown, Search, Mail, Phone, MapPin, Calendar, Briefcase, TrendingUp, TrendingDown, Minus, FileText } from "lucide-react";
 import { DeleteLawyerModal } from "./DeleteLawyerModal";
+import LawyerDetailsModal from "./LawyerDetailsModal";
 
 interface LawyerTableProps {
   lawyers: Lawyer[];
@@ -69,6 +69,8 @@ export function LawyerTable({ lawyers, onEdit, onDelete, isLoading = false }: La
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [lawyerToDelete, setLawyerToDelete] = useState<number | null>(null);
+  const [selectedLawyer, setSelectedLawyer] = useState<Lawyer | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -110,6 +112,11 @@ export function LawyerTable({ lawyers, onEdit, onDelete, isLoading = false }: La
   const handleDeleteClick = (id: number) => {
     setLawyerToDelete(id);
     setDeleteModalOpen(true);
+  };
+
+  const handleViewDetails = (lawyer: Lawyer) => {
+    setSelectedLawyer(lawyer);
+    setModalOpen(true);
   };
 
   const hasFilters = searchTerm !== "";
@@ -177,7 +184,12 @@ export function LawyerTable({ lawyers, onEdit, onDelete, isLoading = false }: La
                 const Icon = badge.icon;
 
                 return (
-                  <TableRow key={lawyer.id} className="hover:bg-gradient-to-r hover:from-primary/5 hover:to-transparent transition-all duration-200 border-b border-gray-100">
+                  <TableRow
+                    key={lawyer.id}
+                    onClick={() => handleViewDetails(lawyer)}
+                    className="transition-all duration-200 border-b border-gray-100 cursor-pointer
+                               hover:bg-gradient-to-r hover:from-primary/10 hover:to-transparent hover:shadow-sm"
+                  >
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-3">
                         <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-semibold text-sm">
@@ -218,7 +230,19 @@ export function LawyerTable({ lawyers, onEdit, onDelete, isLoading = false }: La
                       </div>
                     </TableCell>
 
-                   <TableCell> <div className="space-y-1"> <div className="flex items-center gap-2"> <div className="px-2.5 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs font-semibold"> {lawyer.affairesEnCours} en cours </div> </div> <div className="flex gap-2 text-xs"> <span className="text-emerald-600 dark:text-emerald-400 font-medium"> ✓ {lawyer.affairesAcceptees} </span> <span className="text-gray-400">·</span> <span className="text-red-600 dark:text-red-400 font-medium"> ✗ {lawyer.affairesRefusees} </span> </div> </div> </TableCell>
+                   <TableCell>
+                     <div className="space-y-1">
+                       <div className="flex items-center gap-2"> 
+                        <div className="px-2.5 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs font-semibold"> 
+                        {lawyer.affairesEnCours} en cours </div> 
+                        </div>
+                         <div className="flex gap-2 text-xs">
+                           <span className="text-emerald-600 dark:text-emerald-400 font-medium"> ✓ {lawyer.affairesAcceptees} </span>
+                            <span className="text-gray-400">·</span>
+                             <span className="text-red-600 dark:text-red-400 font-medium"> ✗ {lawyer.affairesRefusees} </span>
+                              </div> 
+                              </div>
+                     </TableCell>
 
                     <TableCell>
                       <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full ${badge.color} text-xs font-semibold`}>
@@ -228,10 +252,20 @@ export function LawyerTable({ lawyers, onEdit, onDelete, isLoading = false }: La
 
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
-                        <Button variant="outline" size="sm" onClick={() => onEdit(lawyer)} className="hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700 transition-all">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => { e.stopPropagation(); onEdit(lawyer); }}
+                          className="hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700 transition-all"
+                        >
                           <Pencil className="h-4 w-4" />
                         </Button>
-                        <Button variant="outline" size="sm" onClick={() => handleDeleteClick(lawyer.id)} className="hover:bg-red-600 shadow-md hover:shadow-lg transition-all">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => { e.stopPropagation(); handleDeleteClick(lawyer.id); }}
+                          className="hover:bg-red-600 shadow-md hover:shadow-lg transition-all"
+                        >
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
@@ -244,6 +278,14 @@ export function LawyerTable({ lawyers, onEdit, onDelete, isLoading = false }: La
         </Table>
       </div>
 
+      {/* Modal détails avocat */}
+      <LawyerDetailsModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        lawyer={selectedLawyer}
+      />
+
+      {/* Modal suppression */}
       {lawyerToDelete && (
         <DeleteLawyerModal
           isOpen={deleteModalOpen}

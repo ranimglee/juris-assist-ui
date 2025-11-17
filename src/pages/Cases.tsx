@@ -22,26 +22,26 @@ export default function Cases() {
       const res = await fetch(`${API_BASE_URL}/api/affaires`);
       const data = await res.json();
       setCases(mapBackendToFront(data));
+      console.log(cases);
+
     } catch (error) {
       toast.error("Erreur de chargement des affaires");
       console.error(error);
     }
   };
-
-  const mapBackendToFront = (data: any[]): Case[] =>
-    data.map((a) => ({
-      id: Number(a.id),
-      caseNumber: a.numero,
-      title: a.titre,
-      type: a.type.toLowerCase() as CaseType,
-      description: a.nomAccuse,
-      createdAt: a.dateCreation,
-      courtDate: a.dateTribunal,
-      status: translateBackendStatus(a.statut),
-      assignedLawyerId: a.avocatId ? String(a.avocatId) : undefined,
-      assignedLawyerName: a.avocatAssigne?.nom || undefined,
-      notificationSent: a.notificationSent || false,
-    }));
+const mapBackendToFront = (data: any[]): Case[] =>
+  data.map((a) => ({
+    id: Number(a.id),
+    caseNumber: a.numero,
+    title: a.titre,
+    type: a.type.toLowerCase() as CaseType,
+    description: a.nomAccuse,
+    createdAt: a.dateCreation,
+    courtDate: a.dateTribunal,
+    status: translateBackendStatus(a.statut),
+    assignedLawyerId: a.avocatId ? String(a.avocatId) : undefined,
+    assignedLawyerName: a.avocatNom || undefined
+  }));
 
   const translateBackendStatus = (statut: string): CaseStatus => {
     switch (statut) {
@@ -106,8 +106,7 @@ export default function Cases() {
           courtDate: updatedData.dateTribunal,
           status: translateBackendStatus(updatedData.statut),
           assignedLawyerId: updatedData.avocatId ? String(updatedData.avocatId) : undefined,
-          assignedLawyerName: updatedData.avocatAssigne?.nom || undefined,
-          notificationSent: updatedData.notificationSent || false,
+          assignedLawyerName: updatedData.avocatAssigne?.nom || undefined
         };
 
         setCases(prev => prev.map(c => c.id === savedCase!.id ? savedCase! : c));
@@ -131,8 +130,7 @@ export default function Cases() {
           courtDate: data.dateTribunal,
           status: translateBackendStatus(data.statut),
           assignedLawyerId: data.avocatId ? String(data.avocatId) : undefined,
-          assignedLawyerName: data.avocatAssigne?.nom || undefined,
-          notificationSent: data.notificationSent || false,
+          assignedLawyerName: data.avocatAssigne?.nom || undefined
         };
 
         setCases(prev => [savedCase!, ...prev]);

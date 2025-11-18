@@ -22,8 +22,7 @@ interface CaseItem {
   caseNumber: string;
   title: string;
   type: string;
-  description: string;
-  accusedName?: string;
+  nomAccuse?: string;
   assignedLawyerName?: string;
   createdAt: string;
   courtDate?: string;
@@ -295,7 +294,7 @@ const handleDownload = async () => {
       Nom de l'accusé
     </p>
     <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
-      {caseItem.accusedName || "Non renseigné"}
+      {caseItem.nomAccuse || "Non renseigné"}
     </p>
   </div>
 </div>

@@ -23,7 +23,7 @@ export type Case = {
   caseNumber: string;
   title: string;
   type: CaseType;
-  description: string; // nomAccuse
+  nomAccuse: string; // nomAccuse
   createdAt: string;
   courtDate: string;
   status: CaseStatus;

@@ -308,7 +308,7 @@ export function CaseTable({ cases, onEdit, onDelete, getLawyerName, isLoading = 
                     <TableCell className="font-medium max-w-xs">
                       <div className="space-y-1">
                         <p className="font-semibold text-gray-900">{caseItem.title}</p>
-                        <p className="text-xs text-muted-foreground line-clamp-1">{caseItem.description}</p>
+                        <p className="text-xs text-muted-foreground line-clamp-1">{caseItem.nomAccuse}</p>
                       </div>
                     </TableCell>
                     <TableCell>

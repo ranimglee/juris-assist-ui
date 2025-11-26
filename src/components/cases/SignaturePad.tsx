@@ -1,58 +1,47 @@
-import { useRef, useEffect } from "react";
+import { useRef } from "react";
+import SignatureCanvas from "react-signature-canvas";
+import { Button } from "@/components/ui/button";
 
-export function SignaturePad({ onSign }) {
-  const canvasRef = useRef(null);
-  let isDrawing = false;
+interface SignaturePadProps {
+  onSign: (dataUrl: string) => void;
+}
 
-  const startDrawing = (e) => {
-    isDrawing = true;
-    draw(e);
+export default function SignaturePad({ onSign }: SignaturePadProps) {
+  const sigRef = useRef<SignatureCanvas>(null);
+
+  const handleEnd = () => {
+    if (sigRef.current) {
+      const dataUrl = sigRef.current.getTrimmedCanvas().toDataURL("image/png");
+      onSign(dataUrl);
+    }
   };
 
-  const endDrawing = () => {
-    isDrawing = false;
-
-    const canvas = canvasRef.current;
-    const dataUrl = canvas.toDataURL("image/png");
-    onSign(dataUrl);
+  const handleClear = () => {
+    sigRef.current?.clear();
+    onSign("");
   };
-
-  const draw = (e) => {
-    if (!isDrawing) return;
-
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-
-    ctx.lineWidth = 2;
-    ctx.lineCap = "round";
-
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    ctx.lineTo(x, y);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-  };
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-
-    ctx.fillStyle = "#fff";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-  }, []);
 
   return (
-    <canvas
-      ref={canvasRef}
-      width={500}
-      height={150}
-      className="border rounded-md bg-white cursor-crosshair"
-      onMouseDown={startDrawing}
-      onMouseUp={endDrawing}
-      onMouseMove={draw}
-    />
+    <div className="space-y-2">
+      <SignatureCanvas
+        ref={sigRef}
+        penColor="black"
+        canvasProps={{
+          width: 400,
+          height: 150,
+          className:
+            "border-2 border-dashed border-gray-300 rounded-lg bg-white w-full",
+        }}
+        onEnd={handleEnd}
+      />
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={handleClear}
+        className="w-full"
+      >
+        Effacer la signature
+      </Button>
+    </div>
   );
 }

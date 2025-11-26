@@ -72,6 +72,39 @@ export default function Lawyers() {
       toast.error("Erreur lors de la suppression");
     }
   };
+const exportPdf = async () => {
+  try {
+    const res = await fetch("http://localhost:8080/api/lawyers/export/pdf/design");
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "avocats.pdf";
+    a.click();
+
+    toast.success("PDF téléchargé !");
+  } catch (e) {
+    toast.error("Erreur lors du téléchargement du PDF");
+  }
+};
+
+const exportExcel = async () => {
+  try {
+    const res = await fetch("http://localhost:8080/api/lawyers/export/excel");
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "avocats.xlsx";
+    a.click();
+
+    toast.success("Excel téléchargé !");
+  } catch (e) {
+    toast.error("Erreur lors du téléchargement du fichier Excel");
+  }
+};
 
   return (
     <Layout>
@@ -91,14 +124,30 @@ export default function Lawyers() {
               Ajoutez, modifiez et gérez votre équipe d'avocats
             </p>
           </div>
-
+        <div className="flex gap-2">
           <Button 
-            onClick={handleAdd} 
-className="gradient-accent"          >
-            <Plus className="h-5 w-5 mr-2" />
-            Ajouter un avocat
-          </Button>
+    onClick={handleAdd} 
+    size="lg"
+    className="gradient-accent flex items-center justify-center gap-2"
+  >
+    <Plus className="h-5 w-5" />
+    Ajouter un avocat
+  </Button>
+
+
+          
+            <Button onClick={exportPdf} variant="outline" size="lg" className="gap-2">
+              <Scale className="h-5 w-5" />
+              Export PDF
+            </Button>
+            <Button onClick={exportExcel} variant="outline" size="lg" className="gap-2">
+              <Briefcase className="h-5 w-5" />
+              Export Excel
+            </Button>
+          
+          </div>
         </div>
+
 
         {/* Stats Cards */}
         {!isLoading && (

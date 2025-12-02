@@ -38,15 +38,24 @@ export function Navbar() {
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel>Mon Compte</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => setProfileOpen(true)}>
-              <KeyRound className="mr-2 h-4 w-4" />
-              <span>Changer le mot de passe</span>
-            </DropdownMenuItem>
+           <DropdownMenuItem onClick={() => navigate("/change-password")}>
+  <KeyRound className="mr-2 h-4 w-4" />
+  <span>Changer le mot de passe</span>
+</DropdownMenuItem>
+
             <DropdownMenuSeparator />
-            <DropdownMenuItem  className="text-destructive">
-              <LogOut className="mr-2 h-4 w-4" />
-              <span>Se déconnecter</span>
-            </DropdownMenuItem>
+          <DropdownMenuItem
+  className="text-destructive"
+  onClick={() => {
+    // Ici tu peux aussi nettoyer le localStorage ou le token si nécessaire
+    // localStorage.removeItem("token");
+    navigate("/login"); // redirige vers la page login
+    toast({ title: "Déconnexion réussie" });
+  }}
+>
+  <LogOut className="mr-2 h-4 w-4" />
+  <span>Se déconnecter</span>
+</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </header>

@@ -14,7 +14,7 @@ export const getAffairesByAvocatId = async (avocatId: number): Promise<Case[]> =
     caseNumber: affaire.numero,
     title: affaire.titre,
     type: affaire.type,
-    description: affaire.nomAccuse,
+    nomAccuse: affaire.nomAccuse,
     createdAt: affaire.dateCreation,
     courtDate: affaire.dateTribunal,
     status: affaire.statut,

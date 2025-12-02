@@ -158,7 +158,7 @@ const mapBackendToFront = (data: any[]): Case[] =>
         <div className="flex items-center justify-between">
           <div className="space-y-1">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg">
+              <div className="p-2 bg-gradient-to-br gradient-accent to-indigo-600 rounded-lg">
                 <Scale className="h-6 w-6 text-white" />
               </div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-gray-100 dark:to-gray-400 bg-clip-text text-transparent">

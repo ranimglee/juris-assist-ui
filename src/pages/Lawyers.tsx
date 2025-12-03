@@ -6,6 +6,7 @@ import { Lawyer } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Plus, Users, Scale, Briefcase } from "lucide-react";
 import { toast } from "sonner";
+import { useLanguage } from "@/i18n";
 
 import {
   getAllLawyers,
@@ -19,6 +20,7 @@ export default function Lawyers() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingLawyer, setEditingLawyer] = useState<Lawyer | undefined>();
   const [isLoading, setIsLoading] = useState(true);
+  const { t } = useLanguage();
 
   useEffect(() => {
     loadLawyers();
@@ -30,7 +32,7 @@ export default function Lawyers() {
       const data = await getAllLawyers();
       setLawyers(data);
     } catch (e) {
-      toast.error("Erreur lors du chargement des avocats");
+      toast.error(t("lawyers.toast.loadError"));
     } finally {
       setIsLoading(false);
     }
@@ -49,27 +51,30 @@ export default function Lawyers() {
   const handleSave = async (lawyerData: Omit<Lawyer, "id">) => {
     try {
       if (editingLawyer) {
-        const updated = await updateLawyer(Number(editingLawyer.id), lawyerData);
-        setLawyers(lawyers.map(l => l.id === updated.id ? updated : l));
-        toast.success("Avocat modifié avec succès");
+        const updated = await updateLawyer(
+          Number(editingLawyer.id),
+          lawyerData,
+        );
+        setLawyers(lawyers.map((l) => (l.id === updated.id ? updated : l)));
+        toast.success(t("lawyers.toast.saveUpdate"));
       } else {
         const created = await createLawyer(lawyerData);
         setLawyers([...lawyers, created]);
-        toast.success("Avocat ajouté avec succès");
+        toast.success(t("lawyers.toast.saveCreate"));
       }
       setIsModalOpen(false);
     } catch {
-      toast.error("Erreur lors de l'enregistrement");
+      toast.error(t("lawyers.toast.saveError"));
     }
   };
 
   const handleDelete = async (id: number) => {
     try {
       await deleteLawyer(Number(id));
-      setLawyers(lawyers.filter(l => l.id !== id));
-      toast.success("Avocat supprimé avec succès");
+      setLawyers(lawyers.filter((l) => l.id !== id));
+      toast.success(t("lawyers.toast.deleteSuccess"));
     } catch {
-      toast.error("Erreur lors de la suppression");
+      toast.error(t("lawyers.toast.deleteError"));
     }
   };
 const exportPdf = async () => {
@@ -83,9 +88,9 @@ const exportPdf = async () => {
     a.download = "avocats.pdf";
     a.click();
 
-    toast.success("PDF téléchargé !");
+    toast.success(t("lawyers.toast.exportPdfSuccess"));
   } catch (e) {
-    toast.error("Erreur lors du téléchargement du PDF");
+    toast.error(t("lawyers.toast.exportPdfError"));
   }
 };
 
@@ -100,9 +105,9 @@ const exportExcel = async () => {
     a.download = "avocats.xlsx";
     a.click();
 
-    toast.success("Excel téléchargé !");
+    toast.success(t("lawyers.toast.exportExcelSuccess"));
   } catch (e) {
-    toast.error("Erreur lors du téléchargement du fichier Excel");
+    toast.error(t("lawyers.toast.exportExcelError"));
   }
 };
 
@@ -117,32 +122,42 @@ const exportExcel = async () => {
                 <Scale className="h-6 w-6 text-white" />
               </div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-gray-100 dark:to-gray-400 bg-clip-text text-transparent">
-                Gestion des avocats
+                {t("lawyers.title")}
               </h1>
             </div>
             <p className="text-sm text-muted-foreground pl-14">
-              Ajoutez, modifiez et gérez votre équipe d'avocats
+              {t("lawyers.subtitle")}
             </p>
           </div>
         <div className="flex gap-2">
-          <Button 
-    onClick={handleAdd} 
-    size="lg"
-    className="gradient-accent flex items-center justify-center gap-2"
-  >
-    <Plus className="h-5 w-5" />
-    Ajouter un avocat
-  </Button>
+          <Button
+            onClick={handleAdd}
+            size="lg"
+            className="gradient-accent flex items-center justify-center gap-2"
+          >
+            <Plus className="h-5 w-5" />
+            {t("lawyers.add")}
+          </Button>
 
 
           
-            <Button onClick={exportPdf} variant="outline" size="lg" className="gap-2">
+            <Button
+              onClick={exportPdf}
+              variant="outline"
+              size="lg"
+              className="gap-2"
+            >
               <Scale className="h-5 w-5" />
-              Export PDF
+              {t("lawyers.exportPdf")}
             </Button>
-            <Button onClick={exportExcel} variant="outline" size="lg" className="gap-2">
+            <Button
+              onClick={exportExcel}
+              variant="outline"
+              size="lg"
+              className="gap-2"
+            >
               <Briefcase className="h-5 w-5" />
-              Export Excel
+              {t("lawyers.exportExcel")}
             </Button>
           
           </div>
@@ -155,7 +170,9 @@ const exportExcel = async () => {
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-slate-600 mb-1">Total Avocats</p>
+                  <p className="text-sm font-medium text-slate-600 mb-1">
+                    {t("lawyers.stats.total")}
+                  </p>
                   <p className="text-3xl font-bold text-slate-900">{lawyers.length}</p>
                   </div>
                 <div className="p-3 bg-blue-50 rounded-xl">
@@ -167,7 +184,9 @@ const exportExcel = async () => {
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-slate-600 mb-1">Actifs</p>
+                  <p className="text-sm font-medium text-slate-600 mb-1">
+                    {t("lawyers.stats.active")}
+                  </p>
                  <p className="text-3xl font-bold text-amber-600">4</p>
                </div>
                 <div className="p-3 bg-blue-50 rounded-xl">
@@ -179,7 +198,9 @@ const exportExcel = async () => {
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-slate-600 mb-1">Spécialités</p>
+                  <p className="text-sm font-medium text-slate-600 mb-1">
+                    {t("lawyers.stats.specialties")}
+                  </p>
                   <p className="text-3xl font-bold text-indigo-600">2</p>
                </div>
                 <div className="p-3 bg-blue-50 rounded-xl">
@@ -191,7 +212,9 @@ const exportExcel = async () => {
                 <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-slate-600 mb-1">Spécialités</p>
+                  <p className="text-sm font-medium text-slate-600 mb-1">
+                    {t("lawyers.stats.specialties")}
+                  </p>
                    <p className="text-3xl font-bold text-indigo-600">2</p>
                </div>
                 <div className="p-3 bg-blue-50 rounded-xl">
@@ -213,10 +236,10 @@ const exportExcel = async () => {
                 </div>
                 <div className="text-center space-y-2">
                   <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                    Chargement des données...
+                    {t("lawyers.loading.title")}
                   </p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Veuillez patienter un instant
+                    {t("lawyers.loading.subtitle")}
                   </p>
                 </div>
               </div>
@@ -233,10 +256,10 @@ const exportExcel = async () => {
 
                 <div className="text-center space-y-3 max-w-md">
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                    Aucun avocat enregistré
+                    {t("lawyers.empty.title")}
                   </h3>
                   <p className="text-gray-600 dark:text-gray-400">
-                    Commencez par ajouter votre premier avocat pour gérer votre équipe juridique
+                    {t("lawyers.empty.subtitle")}
                   </p>
                   
                   <Button 
@@ -244,7 +267,7 @@ const exportExcel = async () => {
                     className="mt-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-200"
                   >
                     <Plus className="h-5 w-5 mr-2" />
-                    Ajouter votre premier avocat
+                    {t("lawyers.empty.button")}
                   </Button>
                 </div>
               </div>
@@ -252,11 +275,16 @@ const exportExcel = async () => {
           ) : (
    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
               <div className="p-6 border-b border-slate-200">
-              <h2 className="text-xl font-semibold text-slate-900">Liste des avocats</h2>
-              <p className="text-sm text-slate-600 mt-1">
-                {lawyers.length} avocat{lawyers.length !== 1 ? 's' : ''} au total
-              </p>
-            </div>
+                <h2 className="text-xl font-semibold text-slate-900">
+                  {t("lawyers.list.title")}
+                </h2>
+                <p className="text-sm text-slate-600 mt-1">
+                  {t("lawyers.list.count", {
+                    count: lawyers.length,
+                    suffix: lawyers.length !== 1 ? "s" : "",
+                  })}
+                </p>
+              </div>
 
             <div className="overflow-x-auto">
               <LawyerTable

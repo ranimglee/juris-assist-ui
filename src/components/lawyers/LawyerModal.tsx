@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { User, Mail, Phone, MapPin, Home, Calendar, Scale, AlertCircle } from "lucide-react";
+import { useLanguage } from "@/i18n";
 
 interface LawyerModalProps {
   isOpen: boolean;
@@ -15,6 +16,7 @@ interface LawyerModalProps {
 
 export function LawyerModal({ isOpen, onClose, onSave, lawyer }: LawyerModalProps) {
   const [formData, setFormData] = useState({
+    identifiant:"",
     prenom: "",
     nom: "",
     email: "",
@@ -26,10 +28,12 @@ export function LawyerModal({ isOpen, onClose, onSave, lawyer }: LawyerModalProp
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const { t } = useLanguage();
 
   useEffect(() => {
     if (lawyer) {
       setFormData({
+        identifiant: lawyer.identifiant,
         prenom: lawyer.prenom,
         nom: lawyer.nom,
         email: lawyer.email,
@@ -42,6 +46,7 @@ export function LawyerModal({ isOpen, onClose, onSave, lawyer }: LawyerModalProp
       // Set today's date as default for new lawyers
       const today = new Date().toISOString().split('T')[0];
       setFormData({
+        identifiant: "",
         prenom: "",
         nom: "",
         email: "",
@@ -59,18 +64,18 @@ export function LawyerModal({ isOpen, onClose, onSave, lawyer }: LawyerModalProp
     switch (name) {
       case "email":
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-          return "Email invalide";
+          return t("lawyers.modal.error.email");
         }
         break;
       case "telephone":
         if (!/^[\d\s\-\+\(\)]+$/.test(value) || value.length < 8) {
-          return "Numéro de téléphone invalide";
+          return t("lawyers.modal.error.phone");
         }
         break;
       case "prenom":
       case "nom":
         if (value.length < 2) {
-          return "Minimum 2 caractères";
+          return t("lawyers.modal.error.minChars");
         }
         break;
     }
@@ -127,10 +132,14 @@ export function LawyerModal({ isOpen, onClose, onSave, lawyer }: LawyerModalProp
             </div>
             <div>
               <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-gray-100 dark:to-gray-400 bg-clip-text text-transparent">
-                {lawyer ? "Modifier l'avocat" : "Ajouter un avocat"}
+                {lawyer
+                  ? t("lawyers.modal.title.edit")
+                  : t("lawyers.modal.title.create")}
               </DialogTitle>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-                {lawyer ? "Mettez à jour les informations de l'avocat" : "Remplissez les informations du nouvel avocat"}
+                {lawyer
+                  ? t("lawyers.modal.subtitle.edit")
+                  : t("lawyers.modal.subtitle.create")}
               </p>
             </div>
           </div>
@@ -141,19 +150,46 @@ export function LawyerModal({ isOpen, onClose, onSave, lawyer }: LawyerModalProp
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
               <User className="h-4 w-4 text-blue-600" />
-              Informations personnelles
+              {t("lawyers.modal.section.personal")}
             </div>
-            
+            {/* Identifiant Section */}
+<div className="space-y-2">
+  <Label className="text-sm font-medium flex items-center gap-1.5">
+    <User className="h-3.5 w-3.5 text-gray-400" />
+    {t("lawyers.modal.identifiant")}{" "}
+    <span className="text-red-500">*</span>
+  </Label>
+  <Input
+    value={formData.identifiant}
+    onChange={(e) => handleChange("identifiant", e.target.value)}
+    onBlur={() => handleBlur("identifiant")}
+    placeholder={t("lawyers.modal.identifiant.placeholder")}
+    className={`h-11 transition-all ${
+      errors.identifiant && touched.identifiant
+        ? "border-red-500 focus:ring-red-500"
+        : "focus:ring-blue-500"
+    }`}
+    required
+  />
+  {errors.identifiant && touched.identifiant && (
+    <div className="flex items-center gap-1.5 text-xs text-red-600 dark:text-red-400">
+      <AlertCircle className="h-3 w-3" />
+      {errors.identifiant}
+    </div>
+  )}
+</div>
+
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-sm font-medium flex items-center gap-1.5">
-                  Prénom <span className="text-red-500">*</span>
+                  {t("lawyers.modal.firstName")}{" "}
+                  <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   value={formData.prenom}
                   onChange={(e) => handleChange("prenom", e.target.value)}
                   onBlur={() => handleBlur("prenom")}
-                  placeholder="Ex: Jean"
+                  placeholder={t("lawyers.modal.firstName.placeholder")}
                   className={`h-11 transition-all ${
                     errors.prenom && touched.prenom
                       ? "border-red-500 focus:ring-red-500"
@@ -171,13 +207,14 @@ export function LawyerModal({ isOpen, onClose, onSave, lawyer }: LawyerModalProp
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium flex items-center gap-1.5">
-                  Nom <span className="text-red-500">*</span>
+                  {t("lawyers.modal.lastName")}{" "}
+                  <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   value={formData.nom}
                   onChange={(e) => handleChange("nom", e.target.value)}
                   onBlur={() => handleBlur("nom")}
-                  placeholder="Ex: Dupont"
+                  placeholder={t("lawyers.modal.lastName.placeholder")}
                   className={`h-11 transition-all ${
                     errors.nom && touched.nom
                       ? "border-red-500 focus:ring-red-500"
@@ -199,20 +236,21 @@ export function LawyerModal({ isOpen, onClose, onSave, lawyer }: LawyerModalProp
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
               <Mail className="h-4 w-4 text-blue-600" />
-              Informations de contact
+              {t("lawyers.modal.section.contact")}
             </div>
 
             <div className="space-y-2">
               <Label className="text-sm font-medium flex items-center gap-1.5">
                 <Mail className="h-3.5 w-3.5 text-gray-400" />
-                Email <span className="text-red-500">*</span>
+                {t("lawyers.modal.email")}{" "}
+                <span className="text-red-500">*</span>
               </Label>
               <Input
                 type="email"
                 value={formData.email}
                 onChange={(e) => handleChange("email", e.target.value)}
                 onBlur={() => handleBlur("email")}
-                placeholder="exemple@email.com"
+                placeholder={t("lawyers.modal.email.placeholder")}
                 className={`h-11 transition-all ${
                   errors.email && touched.email
                     ? "border-red-500 focus:ring-red-500"
@@ -231,13 +269,14 @@ export function LawyerModal({ isOpen, onClose, onSave, lawyer }: LawyerModalProp
             <div className="space-y-2">
               <Label className="text-sm font-medium flex items-center gap-1.5">
                 <Phone className="h-3.5 w-3.5 text-gray-400" />
-                Téléphone <span className="text-red-500">*</span>
+                {t("lawyers.modal.phone")}{" "}
+                <span className="text-red-500">*</span>
               </Label>
               <Input
                 value={formData.telephone}
                 onChange={(e) => handleChange("telephone", e.target.value)}
                 onBlur={() => handleBlur("telephone")}
-                placeholder="+216 12 345 678"
+                placeholder={t("lawyers.modal.phone.placeholder")}
                 className={`h-11 transition-all ${
                   errors.telephone && touched.telephone
                     ? "border-red-500 focus:ring-red-500"
@@ -258,19 +297,20 @@ export function LawyerModal({ isOpen, onClose, onSave, lawyer }: LawyerModalProp
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
               <MapPin className="h-4 w-4 text-blue-600" />
-              Localisation
+              {t("lawyers.modal.section.location")}
             </div>
 
             <div className="space-y-2">
               <Label className="text-sm font-medium flex items-center gap-1.5">
                 <MapPin className="h-3.5 w-3.5 text-gray-400" />
-                Région <span className="text-red-500">*</span>
+                {t("lawyers.modal.region")}{" "}
+                <span className="text-red-500">*</span>
               </Label>
               <Input
                 value={formData.region}
                 onChange={(e) => handleChange("region", e.target.value)}
                 onBlur={() => handleBlur("region")}
-                placeholder="Ex: Tunis"
+                placeholder={t("lawyers.modal.region.placeholder")}
                 className="h-11 focus:ring-blue-500 transition-all"
                 required
               />
@@ -279,13 +319,14 @@ export function LawyerModal({ isOpen, onClose, onSave, lawyer }: LawyerModalProp
             <div className="space-y-2">
               <Label className="text-sm font-medium flex items-center gap-1.5">
                 <Home className="h-3.5 w-3.5 text-gray-400" />
-                Adresse complète <span className="text-red-500">*</span>
+                {t("lawyers.modal.address")}{" "}
+                <span className="text-red-500">*</span>
               </Label>
               <Input
                 value={formData.adresse}
                 onChange={(e) => handleChange("adresse", e.target.value)}
                 onBlur={() => handleBlur("adresse")}
-                placeholder="Ex: 123 Avenue Habib Bourguiba, Tunis"
+                placeholder={t("lawyers.modal.address.placeholder")}
                 className="h-11 focus:ring-blue-500 transition-all"
                 required
               />
@@ -296,7 +337,7 @@ export function LawyerModal({ isOpen, onClose, onSave, lawyer }: LawyerModalProp
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
               <Calendar className="h-4 w-4 text-blue-600" />
-              Date d'inscription
+              {t("lawyers.modal.registrationDate")}
             </div>
 
             <div className="space-y-2">
@@ -309,25 +350,25 @@ export function LawyerModal({ isOpen, onClose, onSave, lawyer }: LawyerModalProp
                 required
               />
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                Date à laquelle l'avocat a rejoint le cabinet
+                {t("lawyers.modal.registrationDate.help")}
               </p>
             </div>
           </div>
 
           <DialogFooter className="pt-6 border-t border-gray-200 dark:border-gray-800 gap-3">
-            <Button 
+            <Button
               type="button"
-              variant="outline" 
+              variant="outline"
               onClick={onClose}
               className="min-w-[100px] h-11 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             >
-              Annuler
+              {t("lawyers.modal.cancel")}
             </Button>
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               className="gradient-accent h-11 px-8 font-semibold shadow-md hover:shadow-lg transition-all"
             >
-              {lawyer ? "Enregister" : "Enregister"}
+              {t("lawyers.modal.save")}
             </Button>
           </DialogFooter>
         </form>

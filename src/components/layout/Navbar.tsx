@@ -10,56 +10,73 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
+import { useLanguage } from "@/i18n";
 
 export function Navbar() {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [profileOpen, setProfileOpen] = useState(false);
+  const { lang, setLang, t } = useLanguage();
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
- 
+  const toggleLang = () => {
+    setLang(lang === "fr" ? "ar" : "fr");
+  };
 
   return (
-    <>
-      <header className="h-16 border-b border-border bg-background flex items-center justify-end px-6 gap-4">
-        {/* Notifications */}
-        <Button variant="ghost" size="icon" className="relative">
-          <Bell className="h-5 w-5" />
-          <span className="absolute top-1 right-1 h-2 w-2 bg-primary rounded-full" />
-        </Button>
+    <header className="h-16 border-b border-border bg-background flex items-center justify-end px-6 gap-4">
+      {/* Language Switcher */}
+      <Button
+        variant="outline"
+        size="sm"
+        className="font-semibold"
+        onClick={toggleLang}
+      >
+        {lang === "fr" ? "العربية" : "Français"}
+      </Button>
 
-        {/* Profile Dropdown */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <User className="h-5 w-5" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel>Mon Compte</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-           <DropdownMenuItem onClick={() => navigate("/change-password")}>
-  <KeyRound className="mr-2 h-4 w-4" />
-  <span>Changer le mot de passe</span>
-</DropdownMenuItem>
+      {/* Notifications */}
+      <Button variant="ghost" size="icon" className="relative">
+        <Bell className="h-5 w-5" />
+        <span className="absolute top-1 right-1 h-2 w-2 bg-primary rounded-full" />
+      </Button>
 
-            <DropdownMenuSeparator />
-          <DropdownMenuItem
+      {/* Profile Dropdown */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon">
+            <User className="h-5 w-5" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-56">
+          <DropdownMenuLabel>{t("navbar.account")}</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={() => navigate("/change-password")}>
+            <KeyRound className="mr-2 h-4 w-4" />
+            <span>{t("navbar.changePassword")}</span>
+          </DropdownMenuItem>
+
+          <DropdownMenuSeparator />
+         <DropdownMenuItem
   className="text-destructive"
-  onClick={() => {
-    // Ici tu peux aussi nettoyer le localStorage ou le token si nécessaire
-    // localStorage.removeItem("token");
-    navigate("/login"); // redirige vers la page login
-    toast({ title: "Déconnexion réussie" });
+  onClick={async () => {
+    try {
+      await fetch(`${API_BASE_URL}/auth/logout`, {
+        method: "POST",
+        credentials: "include", // important to send cookies
+      });
+      toast({ title: t("navbar.logout.success") });
+      navigate("/");
+    } catch (error) {
+      toast({ title: t("navbar.logout.failed"), variant: "destructive" });
+    }
   }}
 >
   <LogOut className="mr-2 h-4 w-4" />
-  <span>Se déconnecter</span>
+  <span>{t("navbar.logout")}</span>
 </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </header>
 
-    </>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </header>
   );
 }

@@ -6,12 +6,14 @@ import { CaseModal } from "@/components/cases/CaseModal";
 import { Button } from "@/components/ui/button";
 import { Plus, Briefcase, Scale, FileText, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
+import { useLanguage } from "@/i18n";
 
 export default function Cases() {
   const [cases, setCases] = useState<Case[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCase, setEditingCase] = useState<Case | undefined>();
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  const { t } = useLanguage();
 
   useEffect(() => {
     loadCases();
@@ -23,9 +25,8 @@ export default function Cases() {
       const data = await res.json();
       setCases(mapBackendToFront(data));
       console.log(cases);
-
     } catch (error) {
-      toast.error("Erreur de chargement des affaires");
+      toast.error(t("cases.toast.loadError"));
       console.error(error);
     }
   };
@@ -59,11 +60,11 @@ const mapBackendToFront = (data: any[]): Case[] =>
       const res = await fetch(`${API_BASE_URL}/api/affaires/${caseId}`, {
         method: "DELETE",
       });
-      if (!res.ok) throw new Error("Erreur lors de la suppression");
-      toast.success("Affaire supprimée");
+      if (!res.ok) throw new Error(t("cases.toast.deleteError"));
+      toast.success(t("cases.toast.deleteSuccess"));
       setCases((prev) => prev.filter((c) => c.id !== caseId));
     } catch (error: any) {
-      toast.error(error.message || "Erreur lors de la suppression");
+      toast.error(error.message || t("cases.toast.deleteError"));
       console.error(error);
     }
   };
@@ -87,13 +88,16 @@ const mapBackendToFront = (data: any[]): Case[] =>
       let savedCase: Case | null = null;
 
       if (editingCase) {
-        const res = await fetch(`${API_BASE_URL}/api/affaires/${editingCase.id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(dto),
-        });
-        if (!res.ok) throw new Error("Erreur lors de la modification");
-        toast.success("Affaire modifiée");
+        const res = await fetch(
+          `${API_BASE_URL}/api/affaires/${editingCase.id}`,
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(dto),
+          },
+        );
+        if (!res.ok) throw new Error(t("cases.toast.updateError"));
+        toast.success(t("cases.toast.updateSuccess"));
 
         const updatedData = await res.json();
         savedCase = {
@@ -116,8 +120,8 @@ const mapBackendToFront = (data: any[]): Case[] =>
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(dto),
         });
-        if (!res.ok) throw new Error("Erreur lors de la création");
-        toast.success("Affaire créée");
+        if (!res.ok) throw new Error(t("cases.toast.createError"));
+        toast.success(t("cases.toast.createSuccess"));
 
         const data = await res.json();
         savedCase = {
@@ -136,7 +140,7 @@ const mapBackendToFront = (data: any[]): Case[] =>
         setCases(prev => [savedCase!, ...prev]);
       }
     } catch (error: any) {
-      toast.error(error.message || "Erreur lors de l'enregistrement");
+      toast.error(error.message || t("cases.toast.saveError"));
       console.error(error);
     }
   };
@@ -162,23 +166,24 @@ const mapBackendToFront = (data: any[]): Case[] =>
                 <Scale className="h-6 w-6 text-white" />
               </div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-gray-100 dark:to-gray-400 bg-clip-text text-transparent">
-                Gestion des affaires
+                {t("cases.title")}
               </h1>
             </div>
             <p className="text-sm text-muted-foreground pl-14">
-                  Créez et gérez les affaires judiciaires en toute simplicité
+              {t("cases.subtitle")}
             </p>
           </div>
 
-          <Button 
-  onClick={() => {
-                  setEditingCase(undefined);
-                  setIsModalOpen(true);
-                }}           className="gradient-accent"
+          <Button
+            onClick={() => {
+              setEditingCase(undefined);
+              setIsModalOpen(true);
+            }}
+            className="gradient-accent"
           >
             <Plus className="h-5 w-5 mr-2" />
-Nouvelle affaire        
-  </Button>
+            {t("cases.new")}
+          </Button>
 
         </div>
 
@@ -191,7 +196,9 @@ Nouvelle affaire
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-slate-600 mb-1">Total des affaires</p>
+                  <p className="text-sm font-medium text-slate-600 mb-1">
+                    {t("cases.stats.total")}
+                  </p>
                   <p className="text-3xl font-bold text-slate-900">{stats.total}</p>
                 </div>
                 <div className="p-3 bg-blue-50 rounded-xl">
@@ -203,7 +210,9 @@ Nouvelle affaire
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-slate-600 mb-1">En attente</p>
+                  <p className="text-sm font-medium text-slate-600 mb-1">
+                    {t("cases.stats.pending")}
+                  </p>
                   <p className="text-3xl font-bold text-amber-600">{stats.pending}</p>
                 </div>
                 <div className="p-3 bg-amber-50 rounded-xl">
@@ -215,7 +224,9 @@ Nouvelle affaire
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-slate-600 mb-1">Assignées</p>
+                  <p className="text-sm font-medium text-slate-600 mb-1">
+                    {t("cases.stats.assigned")}
+                  </p>
                   <p className="text-3xl font-bold text-indigo-600">{stats.assigned}</p>
                 </div>
                 <div className="p-3 bg-indigo-50 rounded-xl">
@@ -227,7 +238,9 @@ Nouvelle affaire
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-slate-600 mb-1">Actives</p>
+                  <p className="text-sm font-medium text-slate-600 mb-1">
+                    {t("cases.stats.active")}
+                  </p>
                   <p className="text-3xl font-bold text-green-600">{stats.active}</p>
                 </div>
                 <div className="p-3 bg-green-50 rounded-xl">
@@ -238,13 +251,18 @@ Nouvelle affaire
           </div>
 
           {/* Cases Table */}
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-            <div className="p-6 border-b border-slate-200">
-              <h2 className="text-xl font-semibold text-slate-900">Liste des affaires</h2>
-              <p className="text-sm text-slate-600 mt-1">
-                {cases.length} affaire{cases.length !== 1 ? 's' : ''} au total
-              </p>
-            </div>
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+              <div className="p-6 border-b border-slate-200">
+                <h2 className="text-xl font-semibold text-slate-900">
+                  {t("cases.list.title")}
+                </h2>
+                <p className="text-sm text-slate-600 mt-1">
+                  {t("cases.list.count", {
+                    count: cases.length,
+                    suffix: cases.length !== 1 ? "s" : "",
+                  })}
+                </p>
+              </div>
             <div className="overflow-x-auto">
               <CaseTable
                 cases={cases}

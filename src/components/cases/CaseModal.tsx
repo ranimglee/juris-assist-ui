@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FileText, Scale, User, Calendar, Hash, AlertCircle } from "lucide-react";
+import { useLanguage } from "@/i18n";
 
 interface CaseModalProps {
   isOpen: boolean;
@@ -35,6 +36,7 @@ export function CaseModal({ isOpen, onClose, onSave, caseData }: CaseModalProps)
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const { t } = useLanguage();
 
   useEffect(() => {
     if (caseData) {
@@ -61,18 +63,18 @@ export function CaseModal({ isOpen, onClose, onSave, caseData }: CaseModalProps)
   const validateField = (name: string, value: string) => {
     switch (name) {
       case "numero":
-        if (!value) return "Numéro obligatoire";
+        if (!value) return t("cases.modal.error.numberRequired");
         break;
       case "titre":
-        if (!value) return "Titre obligatoire";
-        if (value.length < 3) return "Minimum 3 caractères";
+        if (!value) return t("cases.modal.error.titleRequired");
+        if (value.length < 3) return t("cases.modal.error.min3");
         break;
       case "nomAccuse":
-        if (!value) return "Nom de l'accusé obligatoire";
-        if (value.length < 2) return "Minimum 2 caractères";
+        if (!value) return t("cases.modal.error.accusedRequired");
+        if (value.length < 2) return t("cases.modal.error.min2");
         break;
       case "dateTribunal":
-        if (!value) return "Date du tribunal obligatoire";
+        if (!value) return t("cases.modal.error.courtDateRequired");
         break;
     }
     return "";
@@ -129,7 +131,9 @@ export function CaseModal({ isOpen, onClose, onSave, caseData }: CaseModalProps)
             </div>
             <div>
               <DialogTitle className="text-2xl font-bold">
-                {caseData ? "Modifier l'affaire" : "Créer une nouvelle affaire"}
+                {caseData
+                  ? t("cases.modal.title.edit")
+                  : t("cases.modal.title.create")}
               </DialogTitle>
             </div>
           </div>
@@ -139,14 +143,15 @@ export function CaseModal({ isOpen, onClose, onSave, caseData }: CaseModalProps)
           {/* Numéro */}
           <div className="space-y-2">
             <Label htmlFor="numero" className="flex items-center gap-2 text-sm font-semibold">
-              <Hash className="w-4 h-4" /> Numéro <span className="text-red-500">*</span>
+              <Hash className="w-4 h-4" /> {t("cases.modal.number")}{" "}
+              <span className="text-red-500">*</span>
             </Label>
             <Input
               id="numero"
               value={formData.numero}
               onChange={(e) => handleChange("numero", e.target.value)}
               onBlur={() => handleBlur("numero")}
-              placeholder="Ex: AFF-2024-001"
+              placeholder={t("cases.modal.number.placeholder")}
               className={`h-11 transition-all ${
                 errors.numero && touched.numero
                   ? "border-red-500 focus:ring-red-500"
@@ -163,14 +168,15 @@ export function CaseModal({ isOpen, onClose, onSave, caseData }: CaseModalProps)
           {/* Titre */}
           <div className="space-y-2">
             <Label htmlFor="titre" className="flex items-center gap-2 text-sm font-semibold">
-              <FileText className="w-4 h-4" /> Titre <span className="text-red-500">*</span>
+              <FileText className="w-4 h-4" /> {t("cases.modal.title")}{" "}
+              <span className="text-red-500">*</span>
             </Label>
             <Input
               id="titre"
               value={formData.titre}
               onChange={(e) => handleChange("titre", e.target.value)}
               onBlur={() => handleBlur("titre")}
-              placeholder="Ex: Affaire de fraude fiscale"
+              placeholder={t("cases.modal.title.placeholder")}
               className={`h-11 transition-all ${
                 errors.titre && touched.titre
                   ? "border-red-500 focus:ring-red-500"
@@ -187,19 +193,19 @@ export function CaseModal({ isOpen, onClose, onSave, caseData }: CaseModalProps)
           {/* Type */}
           <div className="space-y-2">
             <Label className="flex items-center gap-2 text-sm font-semibold">
-              <Scale className="w-4 h-4" /> Type d'affaire
+              <Scale className="w-4 h-4" /> {t("cases.modal.type")}
             </Label>
             <Select
               value={formData.type}
               onValueChange={(value) => setFormData({ ...formData, type: value as CaseType })}
             >
               <SelectTrigger className="h-11 focus:ring-blue-500 transition-all">
-                <SelectValue placeholder="Sélectionnez un type" />
+                <SelectValue placeholder={t("cases.modal.type.placeholder")} />
               </SelectTrigger>
               <SelectContent>
                 {caseTypes.map((type) => (
                   <SelectItem key={type} value={type}>
-                    {type.charAt(0).toUpperCase() + type.slice(1)}
+                    {t(`cases.modal.type.${type}`)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -209,14 +215,15 @@ export function CaseModal({ isOpen, onClose, onSave, caseData }: CaseModalProps)
           {/* Nom accusé */}
           <div className="space-y-2">
             <Label htmlFor="nomAccuse" className="flex items-center gap-2 text-sm font-semibold">
-              <User className="w-4 h-4" /> Nom de l'accusé <span className="text-red-500">*</span>
+              <User className="w-4 h-4" /> {t("cases.modal.accused")}{" "}
+              <span className="text-red-500">*</span>
             </Label>
             <Input
               id="nomAccuse"
               value={formData.nomAccuse}
               onChange={(e) => handleChange("nomAccuse", e.target.value)}
               onBlur={() => handleBlur("nomAccuse")}
-              placeholder="Ex: Jean Dupont"
+              placeholder={t("cases.modal.accused.placeholder")}
               className={`h-11 transition-all ${
                 errors.nomAccuse && touched.nomAccuse
                   ? "border-red-500 focus:ring-red-500"
@@ -233,7 +240,8 @@ export function CaseModal({ isOpen, onClose, onSave, caseData }: CaseModalProps)
           {/* Date tribunal */}
           <div className="space-y-2">
             <Label htmlFor="dateTribunal" className="flex items-center gap-2 text-sm font-semibold">
-              <Calendar className="w-4 h-4" /> Date du tribunal <span className="text-red-500">*</span>
+              <Calendar className="w-4 h-4" /> {t("cases.modal.courtDate")}{" "}
+              <span className="text-red-500">*</span>
             </Label>
             <Input
               id="dateTribunal"
@@ -256,10 +264,10 @@ export function CaseModal({ isOpen, onClose, onSave, caseData }: CaseModalProps)
 
           <DialogFooter className="gap-3 pt-4">
             <Button type="button" variant="outline" onClick={onClose} className="h-11 px-6">
-              Annuler
+              {t("cases.modal.cancel")}
             </Button>
             <Button type="submit" className="gradient-accent h-11 px-8 font-semibold">
-              Enregistrer
+              {t("cases.modal.save")}
             </Button>
           </DialogFooter>
         </form>

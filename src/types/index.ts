@@ -1,6 +1,7 @@
 export interface Lawyer {
   id: number;
   prenom: string;
+  identifiant:string;
   nom: string;
   email: string;
   telephone: string;
@@ -14,7 +15,7 @@ export interface Lawyer {
 }
 
 
-export type CaseType = "criminel" | "civil" | "enquête";
+export type CaseType = "criminel" | "enquete" | "enqueteur_preliminaire";
 
 export type CaseStatus = "pending" | "assigned" | "accepted" | "rejected" | "completed";
 

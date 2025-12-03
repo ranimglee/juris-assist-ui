@@ -1,33 +1,45 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom"; 
 import { Button } from "@/components/ui/button";
-import { Lock, User, Scale } from "lucide-react";
+import {  Eye, EyeOff, Lock , User } from "lucide-react";
 import onatLogo from "@/assets/onat-logo.png";
+import { useLanguage } from "@/i18n";
+import { useToast } from "@/components/ui/use-toast"; 
+
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { t } = useLanguage();
+  const navigate = useNavigate(); 
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  const { toast } = useToast(); 
+const [showPassword, setShowPassword] = useState(false);
 
-  const handleLogin = async () => {
-    if (!email || !password) {
-      alert("Veuillez remplir tous les champs");
-      return;
-    }
+const handleLogin = async () => {
+  if (!email || !password) {
+    toast({ title: t("login.fillAll"), variant: "destructive" });
+    return;
+  }
 
-    try {
-      const res = await fetch(`/api/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+  try {
+    const res = await fetch(`${API_BASE_URL}/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+      credentials: "include", // important: include cookies in requests
+    });
 
-      if (!res.ok) throw new Error("Identifiants incorrects");
+    if (!res.ok) throw new Error(t("login.invalid"));
 
-      const data = await res.json();
-      alert("Connexion réussie");
-      console.log("User logged in:", data);
-    } catch (error) {
-      alert(error.message || "Erreur lors de la connexion");
-    }
-  };
+    const data = await res.json();
+
+    toast({ title: t("login.success"), variant: "default" });
+    navigate("/dashboard");
+  } catch (error: any) {
+    toast({ title: error?.message || t("login.error"), variant: "destructive" });
+  }
+};
+
 
   return (
     <div className="min-h-screen relative flex items-center justify-center overflow-hidden">
@@ -66,10 +78,10 @@ export default function Login() {
           {/* Header */}
           <div className="text-center mb-8">
             <h1 className="text-3xl md:text-3xl font-bold bg-gradient-to-r from-slate-900 via-slate-700 to-amber-900 dark:from-white dark:via-amber-100 dark:to-amber-300 bg-clip-text text-transparent mb-2">
-              Responsable Distribution
+              {t("login.title")}
             </h1>
             <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">
-              Accès sécurisé à votre espace professionnel
+              {t("login.subtitle")}
             </p>
           </div>
 
@@ -77,13 +89,13 @@ export default function Login() {
           <div className="space-y-5">
             <div className="group">
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2 ml-1">
-                Email
+                {t("login.email")}
               </label>
               <div className="relative flex items-center border-2 border-slate-200 dark:border-slate-700 rounded-xl p-3.5 transition-all duration-200 focus-within:border-amber-500 focus-within:ring-4 focus-within:ring-amber-500/10 group-hover:border-slate-300 dark:group-hover:border-slate-600 bg-white dark:bg-slate-800/50">
                 <User className="w-5 h-5 text-slate-400 dark:text-slate-500 mr-3 flex-shrink-0" />
                 <input
                   type="email"
-                  placeholder="votre@email.com"
+                  placeholder={t("login.email.placeholder")}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full bg-transparent outline-none text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
@@ -91,42 +103,49 @@ export default function Login() {
               </div>
             </div>
 
-            <div className="group">
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2 ml-1">
-                Mot de passe
-              </label>
-              <div className="relative flex items-center border-2 border-slate-200 dark:border-slate-700 rounded-xl p-3.5 transition-all duration-200 focus-within:border-amber-500 focus-within:ring-4 focus-within:ring-amber-500/10 group-hover:border-slate-300 dark:group-hover:border-slate-600 bg-white dark:bg-slate-800/50">
-                <Lock className="w-5 h-5 text-slate-400 dark:text-slate-500 mr-3 flex-shrink-0" />
-                <input
-                  type="password"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-transparent outline-none text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
-                />
-              </div>
-            </div>
+<div className="group relative">
+  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2 ml-1">
+    {t("login.password")}
+  </label>
+  <div className="relative flex items-center border-2 border-slate-200 dark:border-slate-700 rounded-xl p-3.5 transition-all duration-200 focus-within:border-amber-500 focus-within:ring-4 focus-within:ring-amber-500/10 group-hover:border-slate-300 dark:group-hover:border-slate-600 bg-white dark:bg-slate-800/50">
+    <Lock className="w-5 h-5 text-slate-400 dark:text-slate-500 mr-3 flex-shrink-0" />
+    <input
+      type={showPassword ? "text" : "password"}
+      placeholder={t("login.password.placeholder")}
+      value={password}
+      onChange={(e) => setPassword(e.target.value)}
+      className="w-full bg-transparent outline-none text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
+    />
+    <button
+      type="button"
+      onClick={() => setShowPassword(!showPassword)}
+      className="absolute right-3 text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
+    >
+      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+    </button>
+  </div>
+</div>
 
             <div className="flex items-center justify-between text-sm">
               <label className="flex items-center cursor-pointer group">
                 <input type="checkbox" className="mr-2 accent-blue-600" />
                 <span className="text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-slate-200 transition-colors">
-                  Se souvenir
+                  {t("login.remember")}
                 </span>
               </label>
               <a 
                 href="/forgot-password" 
                 className="text-red-700 dark:text-red-500 font-semibold hover:text-red-800 dark:hover:text-red-400 transition-colors"
               >
-                Mot de passe oublié?
+                {t("login.forgot")}
               </a>
             </div>
 
             <Button
               onClick={handleLogin}
-  className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 ..."
+              className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800"
             >
-              Se connecter
+              {t("login.submit")}
             </Button>
           </div>
 
@@ -135,13 +154,13 @@ export default function Login() {
           {/* Trust Badge */}
           <div className="mt-6 flex items-center justify-center gap-2 text-xs text-slate-500 dark:text-slate-500">
             <Lock className="w-3.5 h-3.5" />
-            <span>Connexion sécurisée SSL</span>
+            <span>{t("login.ssl")}</span>
           </div>
         </div>
 
         {/* Bottom Text */}
         <p className="text-center text-sm text-white/70 mt-6">
-          © 2025 Ordre National Des Avocats De Tunisie. Tous droits réservés.
+          {t("login.footer")}
         </p>
       </div>
     </div>

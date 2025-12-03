@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Pencil, Trash2, ArrowUpDown, Search, Mail, Phone, MapPin, Calendar, Briefcase, TrendingUp, TrendingDown, Minus, FileText } from "lucide-react";
 import { DeleteLawyerModal } from "./DeleteLawyerModal";
 import LawyerDetailsModal from "./LawyerDetailsModal";
+import { useLanguage } from "@/i18n";
 
 interface LawyerTableProps {
   lawyers: Lawyer[];
@@ -33,7 +34,10 @@ const TableSkeleton = () => (
 );
 
 // Empty state component
-const EmptyState = ({ hasFilters, onClearFilters }: { hasFilters: boolean; onClearFilters: () => void }) => (
+const EmptyState = ({ hasFilters, onClearFilters }: { hasFilters: boolean; onClearFilters: () => void }) => {
+  const { t } = useLanguage();
+
+  return (
   <TableBody>
     <TableRow>
       <TableCell colSpan={7} className="h-96">
@@ -46,15 +50,19 @@ const EmptyState = ({ hasFilters, onClearFilters }: { hasFilters: boolean; onCle
           </div>
           <div className="space-y-2">
             <h3 className="text-xl font-semibold text-gray-700">
-              {hasFilters ? "Aucun résultat trouvé" : "Aucun avocat enregistré"}
+              {hasFilters
+                ? t("lawyers.table.emptyFiltered.title")
+                : t("lawyers.table.empty.title")}
             </h3>
             <p className="text-sm text-muted-foreground max-w-sm">
-              {hasFilters ? "Essayez d'ajuster vos filtres de recherche pour trouver ce que vous cherchez." : "Commencez par créer votre premier avocat pour le voir apparaître ici."}
+              {hasFilters
+                ? t("lawyers.table.emptyFiltered.subtitle")
+                : t("lawyers.table.empty.subtitle")}
             </p>
           </div>
           {hasFilters && (
             <Button variant="outline" size="sm" onClick={onClearFilters}>
-              Réinitialiser les filtres
+              {t("lawyers.table.resetFilters")}
             </Button>
           )}
         </div>
@@ -62,7 +70,7 @@ const EmptyState = ({ hasFilters, onClearFilters }: { hasFilters: boolean; onCle
     </TableRow>
   </TableBody>
 );
-
+};
 export function LawyerTable({ lawyers, onEdit, onDelete, isLoading = false }: LawyerTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortField, setSortField] = useState<SortField>("nom");
@@ -71,6 +79,7 @@ export function LawyerTable({ lawyers, onEdit, onDelete, isLoading = false }: La
   const [lawyerToDelete, setLawyerToDelete] = useState<number | null>(null);
   const [selectedLawyer, setSelectedLawyer] = useState<Lawyer | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const { t } = useLanguage();
 
   const handleSort = (field: SortField) => {
     if (sortField === field) setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -129,7 +138,7 @@ export function LawyerTable({ lawyers, onEdit, onDelete, isLoading = false }: La
         <div className="flex-1 min-w-[300px] relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
-            placeholder="Rechercher par nom, email ou région..."
+            placeholder={t("lawyers.table.searchPlaceholder")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10 bg-white border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
@@ -137,7 +146,12 @@ export function LawyerTable({ lawyers, onEdit, onDelete, isLoading = false }: La
         </div>
         {hasFilters && (
           <div className="text-sm text-muted-foreground bg-white px-3 py-2 rounded-lg border border-gray-200">
-            <span className="font-medium">{filteredAndSortedLawyers.length} résultat{filteredAndSortedLawyers.length !== 1 ? "s" : ""}</span>
+            <span className="font-medium">
+              {t("lawyers.table.results", {
+                count: filteredAndSortedLawyers.length,
+                suffix: filteredAndSortedLawyers.length !== 1 ? "s" : "",
+              })}
+            </span>
           </div>
         )}
       </div>
@@ -148,28 +162,62 @@ export function LawyerTable({ lawyers, onEdit, onDelete, isLoading = false }: La
           <TableHeader>
             <TableRow className="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-200">
               <TableHead className="font-bold">
-                <Button variant="ghost" size="sm" onClick={() => handleSort("nom")} className="font-bold hover:bg-gray-100 transition-colors">
-                  Nom & Prénom {getSortIcon("nom")}
-                </Button>
-              </TableHead>
-              <TableHead className="font-bold">Contact</TableHead>
+  {t("lawyers.table.columns.identifiant")}
+</TableHead>
+
               <TableHead className="font-bold">
-                <Button variant="ghost" size="sm" onClick={() => handleSort("region")} className="font-bold hover:bg-gray-100 transition-colors">
-                  Région {getSortIcon("region")}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleSort("nom")}
+                  className="font-bold hover:bg-gray-100 transition-colors"
+                >
+                  {t("lawyers.table.columns.name")}
+                  {getSortIcon("nom")}
                 </Button>
               </TableHead>
               <TableHead className="font-bold">
-                <Button variant="ghost" size="sm" onClick={() => handleSort("dateInscription")} className="font-bold hover:bg-gray-100 transition-colors">
-                  Inscription {getSortIcon("dateInscription")}
+                {t("lawyers.table.columns.contact")}
+              </TableHead>
+              <TableHead className="font-bold">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleSort("region")}
+                  className="font-bold hover:bg-gray-100 transition-colors"
+                >
+                  {t("lawyers.table.columns.region")}
+                  {getSortIcon("region")}
                 </Button>
               </TableHead>
               <TableHead className="font-bold">
-                <Button variant="ghost" size="sm" onClick={() => handleSort("affairesEnCours")} className="font-bold hover:bg-gray-100 transition-colors">
-                  Affaires {getSortIcon("affairesEnCours")}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleSort("dateInscription")}
+                  className="font-bold hover:bg-gray-100 transition-colors"
+                >
+                  {t("lawyers.table.columns.registration")}
+                  {getSortIcon("dateInscription")}
                 </Button>
               </TableHead>
-              <TableHead className="font-bold">Performance</TableHead>
-              <TableHead className="text-right font-bold">Actions</TableHead>
+              <TableHead className="font-bold">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleSort("affairesEnCours")}
+                  className="font-bold hover:bg-gray-100 transition-colors"
+                >
+                  {t("lawyers.table.columns.cases")}
+                  {getSortIcon("affairesEnCours")}
+                </Button>
+              </TableHead>
+              <TableHead className="font-bold">
+                {t("lawyers.table.columns.performance")}
+              </TableHead>
+              <TableHead className="text-right font-bold">
+                {t("lawyers.table.columns.actions")}
+              </TableHead>
             </TableRow>
           </TableHeader>
 
@@ -190,6 +238,13 @@ export function LawyerTable({ lawyers, onEdit, onDelete, isLoading = false }: La
                     className="transition-all duration-200 border-b border-gray-100 cursor-pointer
                                hover:bg-gradient-to-r hover:from-primary/10 hover:to-transparent hover:shadow-sm"
                   >
+                    <TableCell>
+  <div className="flex items-center gap-2 text-sm text-gray-700">
+    <FileText className="h-3.5 w-3.5 text-gray-400" />
+    {lawyer.identifiant}
+  </div>
+</TableCell>
+
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-3">
                         <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-semibold text-sm">

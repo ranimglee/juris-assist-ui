@@ -7,6 +7,7 @@ import { Pencil, Trash2, Send, CheckCircle, XCircle, Clock, AlertCircle, ArrowUp
 import { Input } from "@/components/ui/input";
 import { DeleteModal } from "./DeleteModal";
 import PdfModal from "./PdfModal";
+import { useLanguage } from "@/i18n";
 
 interface CaseTableProps {
   cases: Case[];
@@ -20,13 +21,37 @@ interface CaseTableProps {
 
 const statusConfig: Record<
   CaseStatus,
-  { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: React.ElementType }
+  {
+    labelKey: string;
+    variant: "default" | "secondary" | "destructive" | "outline";
+    icon: React.ElementType;
+  }
 > = {
-  pending: { label: "En attente", variant: "outline", icon: Clock },
-  assigned: { label: "Assignée", variant: "secondary", icon: AlertCircle },
-  accepted: { label: "Acceptée", variant: "default", icon: CheckCircle },
-  rejected: { label: "Refusée", variant: "destructive", icon: XCircle },
-  completed: { label: "Terminée", variant: "default", icon: CheckCircle },
+  pending: {
+    labelKey: "cases.status.pending",
+    variant: "outline",
+    icon: Clock,
+  },
+  assigned: {
+    labelKey: "cases.status.assigned",
+    variant: "secondary",
+    icon: AlertCircle,
+  },
+  accepted: {
+    labelKey: "cases.status.accepted",
+    variant: "default",
+    icon: CheckCircle,
+  },
+  rejected: {
+    labelKey: "cases.status.rejected",
+    variant: "destructive",
+    icon: XCircle,
+  },
+  completed: {
+    labelKey: "cases.status.completed",
+    variant: "default",
+    icon: CheckCircle,
+  },
 };
 
 // Loading skeleton component
@@ -52,44 +77,61 @@ const TableSkeleton = () => (
 );
 
 // Empty state component
-const EmptyState = ({ hasFilters, onClearFilters }: { hasFilters: boolean; onClearFilters: () => void }) => (
-  <TableBody>
-    <TableRow>
-      <TableCell colSpan={8} className="h-96">
-        <div className="flex flex-col items-center justify-center space-y-4 text-center py-12">
-          <div className="relative">
-            <div className="absolute inset-0 bg-primary/5 blur-3xl rounded-full" />
-            <div className="relative bg-gradient-to-br from-primary/10 to-primary/5 p-6 rounded-full">
-              {hasFilters ? (
-                <Search className="h-16 w-16 text-primary/40" />
-              ) : (
-                <FileText className="h-16 w-16 text-primary/40" />
-              )}
-            </div>
-          </div>
-          <div className="space-y-2">
-            <h3 className="text-xl font-semibold text-gray-700">
-              {hasFilters ? "Aucun résultat trouvé" : "Aucune affaire enregistrée"}
-            </h3>
-            <p className="text-sm text-muted-foreground max-w-sm">
-              {hasFilters 
-                ? "Essayez d'ajuster vos filtres de recherche pour trouver ce que vous cherchez."
-                : "Commencez par créer votre première affaire pour la voir apparaître ici."
-              }
-            </p>
-          </div>
-          {hasFilters && (
-            <Button variant="outline" size="sm" onClick={onClearFilters}>
-              Réinitialiser les filtres
-            </Button>
-          )}
-        </div>
-      </TableCell>
-    </TableRow>
-  </TableBody>
-);
+const EmptyState = ({
+  hasFilters,
+  onClearFilters,
+}: {
+  hasFilters: boolean;
+  onClearFilters: () => void;
+}) => {
+  const { t } = useLanguage();
 
-export function CaseTable({ cases, onEdit, onDelete, getLawyerName, isLoading = false }: CaseTableProps) {
+  return (
+    <TableBody>
+      <TableRow>
+        <TableCell colSpan={8} className="h-96">
+          <div className="flex flex-col items-center justify-center space-y-4 text-center py-12">
+            <div className="relative">
+              <div className="absolute inset-0 bg-primary/5 blur-3xl rounded-full" />
+              <div className="relative bg-gradient-to-br from-primary/10 to-primary/5 p-6 rounded-full">
+                {hasFilters ? (
+                  <Search className="h-16 w-16 text-primary/40" />
+                ) : (
+                  <FileText className="h-16 w-16 text-primary/40" />
+                )}
+              </div>
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-xl font-semibold text-gray-700">
+                {hasFilters
+                  ? t("cases.table.emptyFiltered.title")
+                  : t("cases.table.empty.title")}
+              </h3>
+              <p className="text-sm text-muted-foreground max-w-sm">
+                {hasFilters
+                  ? t("cases.table.emptyFiltered.subtitle")
+                  : t("cases.table.empty.subtitle")}
+              </p>
+            </div>
+            {hasFilters && (
+              <Button variant="outline" size="sm" onClick={onClearFilters}>
+                {t("cases.table.resetFilters")}
+              </Button>
+            )}
+          </div>
+        </TableCell>
+      </TableRow>
+    </TableBody>
+  );
+};
+
+export function CaseTable({
+  cases,
+  onEdit,
+  onDelete,
+  getLawyerName,
+  isLoading = false,
+}: CaseTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<CaseStatus | "all">("all");
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -98,6 +140,7 @@ export function CaseTable({ cases, onEdit, onDelete, getLawyerName, isLoading = 
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [selectedCase, setSelectedCase] = useState<Case | null>(null);
   const [openPdf, setOpenPdf] = useState(false);
+  const { t } = useLanguage();
 
   const handleDeleteClick = (caseId: number) => {
     setCaseToDelete(caseId);
@@ -182,7 +225,7 @@ export function CaseTable({ cases, onEdit, onDelete, getLawyerName, isLoading = 
         <div className="flex-1 min-w-[300px] relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
-            placeholder="Rechercher par numéro, titre, type ou avocat..."
+            placeholder={t("cases.table.searchPlaceholder")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10 bg-white border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
@@ -192,13 +235,15 @@ export function CaseTable({ cases, onEdit, onDelete, getLawyerName, isLoading = 
         <div className="relative">
           <select
             value={selectedStatus}
-            onChange={(e) => setSelectedStatus(e.target.value as CaseStatus | "all")}
+            onChange={(e) =>
+              setSelectedStatus(e.target.value as CaseStatus | "all")
+            }
             className="appearance-none border border-gray-300 rounded-lg px-4 py-2 pr-10 bg-white text-sm font-medium shadow-sm hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all cursor-pointer"
           >
-            <option value="all">Tous les statuts</option>
+            <option value="all">{t("cases.table.status.all")}</option>
             {Object.entries(statusConfig).map(([key, status]) => (
               <option key={key} value={key}>
-                {status.label}
+                {t(status.labelKey)}
               </option>
             ))}
           </select>
@@ -211,16 +256,19 @@ export function CaseTable({ cases, onEdit, onDelete, getLawyerName, isLoading = 
 
         {(hasFilters || isLoading) && (
           <div className="text-sm text-muted-foreground bg-white px-3 py-2 rounded-lg border border-gray-200">
-            {isLoading ? (
-              <span className="flex items-center gap-2">
-                <div className="h-3 w-3 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                Chargement...
-              </span>
-            ) : (
-              <span className="font-medium">
-                {filteredAndSortedCases.length} résultat{filteredAndSortedCases.length !== 1 ? "s" : ""}
-              </span>
-            )}
+                {isLoading ? (
+                  <span className="flex items-center gap-2">
+                    <div className="h-3 w-3 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                    {t("cases.table.loading")}
+                  </span>
+                ) : (
+                  <span className="font-medium">
+                    {t("cases.table.results", {
+                      count: filteredAndSortedCases.length,
+                      suffix: filteredAndSortedCases.length !== 1 ? "s" : "",
+                    })}
+                  </span>
+                )}
           </div>
         )}
       </div>
@@ -238,7 +286,7 @@ export function CaseTable({ cases, onEdit, onDelete, getLawyerName, isLoading = 
                   className="font-bold hover:bg-gray-100
  transition-colors"
                 >
-                  N° Affaire 
+                  {t("cases.table.columns.number")}
                   <ArrowUpDown className={`ml-2 h-4 w-4 ${sortField === "caseNumber" ? "text-primary" : ""}`} />
                 </Button>
               </TableHead>
@@ -250,12 +298,14 @@ export function CaseTable({ cases, onEdit, onDelete, getLawyerName, isLoading = 
                   onClick={() => handleSort("title")} 
                   className="font-bold hover:bg-white/50 transition-colors"
                 >
-                  Titre 
+                  {t("cases.table.columns.title")}
                   <ArrowUpDown className={`ml-2 h-4 w-4 ${sortField === "title" ? "text-primary" : ""}`} />
                 </Button>
               </TableHead>
 
-              <TableHead className="font-bold">Type</TableHead>
+              <TableHead className="font-bold">
+                {t("cases.table.columns.type")}
+              </TableHead>
 
               <TableHead className="font-bold">
                 <Button 
@@ -264,12 +314,14 @@ export function CaseTable({ cases, onEdit, onDelete, getLawyerName, isLoading = 
                   onClick={() => handleSort("courtDate")} 
                   className="font-bold hover:bg-white/50 transition-colors"
                 >
-                  Audience 
+                  {t("cases.table.columns.courtDate")}
                   <ArrowUpDown className={`ml-2 h-4 w-4 ${sortField === "courtDate" ? "text-primary" : ""}`} />
                 </Button>
               </TableHead>
 
-              <TableHead className="font-bold">Statut</TableHead>
+              <TableHead className="font-bold">
+                {t("cases.table.columns.status")}
+              </TableHead>
 
               <TableHead className="font-bold">
                 <Button 
@@ -278,12 +330,14 @@ export function CaseTable({ cases, onEdit, onDelete, getLawyerName, isLoading = 
                   onClick={() => handleSort("assignedLawyerName")} 
                   className="font-bold hover:bg-white/50 transition-colors"
                 >
-                  Avocat assigné 
+                  {t("cases.table.columns.lawyer")}
                   <ArrowUpDown className={`ml-2 h-4 w-4 ${sortField === "assignedLawyerName" ? "text-primary" : ""}`} />
                 </Button>
               </TableHead>
 
-              <TableHead className="text-right font-bold">Actions</TableHead>
+              <TableHead className="text-right font-bold">
+                {t("cases.table.columns.actions")}
+              </TableHead>
             </TableRow>
           </TableHeader>
 
@@ -320,9 +374,12 @@ export function CaseTable({ cases, onEdit, onDelete, getLawyerName, isLoading = 
                       {caseItem.courtDate ? new Date(caseItem.courtDate).toLocaleDateString("fr-FR") : "-"}
                     </TableCell>
                     <TableCell>
-                      <Badge variant={status.variant} className="flex items-center gap-1.5 w-fit font-medium shadow-sm">
+                      <Badge
+                        variant={status.variant}
+                        className="flex items-center gap-1.5 w-fit font-medium shadow-sm"
+                      >
                         <StatusIcon className="h-3.5 w-3.5" />
-                        {status.label}
+                        {t(status.labelKey)}
                       </Badge>
                     </TableCell>
                     <TableCell>
@@ -345,7 +402,7 @@ export function CaseTable({ cases, onEdit, onDelete, getLawyerName, isLoading = 
                           <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
                             <span className="text-xs text-gray-400">?</span>
                           </div>
-                          Non assigné
+                          {t("cases.table.unassigned")}
                         </span>
                       )}
                     </TableCell>

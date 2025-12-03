@@ -7,15 +7,19 @@ import { MonthlyTrendsChart } from "@/components/dashboard/MonthlyTrendsChart";
 import { mockLawyers, mockCases } from "@/lib/mockData";
 import { Lawyer } from "@/types";
 import { Users, Briefcase, CheckCircle, TrendingUp } from "lucide-react";
+import { useLanguage } from "@/i18n";
 
 export default function Dashboard() {
   const [lawyers] = useState<Lawyer[]>(mockLawyers);
+  const { t } = useLanguage();
 
   const stats = {
     totalLawyers: lawyers.length,
     totalCases: mockCases.length,
-    activeCases: mockCases.filter(c => c.status === "assigned" || c.status === "accepted").length,
-    completedCases: mockCases.filter(c => c.status === "completed").length,
+    activeCases: mockCases.filter(
+      (c) => c.status === "assigned" || c.status === "accepted",
+    ).length,
+    completedCases: mockCases.filter((c) => c.status === "completed").length,
   };
 
   return (
@@ -23,35 +27,36 @@ export default function Dashboard() {
       <div className="p-8 space-y-8 bg-gradient-to-br from-background to-muted/30 min-h-screen">
         <div className="animate-fade-in">
           <h1 className="text-4xl font-bold text-foreground bg-gradient-primary bg-clip-text text-black">
-            Tableau de bord
+            {t("dashboard.title")}
           </h1>
-          <p className="text-muted-foreground mt-2 text-lg">Vue d'ensemble de votre gestion juridique</p>
-          
+          <p className="text-muted-foreground mt-2 text-lg">
+            {t("dashboard.subtitle")}
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-fade-in">
           <StatsCard
-            title="Avocats enregistrés"
+            title={t("dashboard.stats.lawyers")}
             value={stats.totalLawyers}
             icon={Users}
             trend={{ value: 12, isPositive: true }}
             gradient="gradient-primary"
           />
           <StatsCard
-            title="Affaires totales"
+            title={t("dashboard.stats.casesTotal")}
             value={stats.totalCases}
             icon={Briefcase}
             trend={{ value: 8, isPositive: true }}
             gradient="gradient-accent"
           />
           <StatsCard
-            title="Affaires en cours"
+            title={t("dashboard.stats.casesActive")}
             value={stats.activeCases}
             icon={TrendingUp}
             gradient="bg-gradient-to-br from-blue-500 to-blue-600"
           />
           <StatsCard
-            title="Affaires terminées"
+            title={t("dashboard.stats.casesCompleted")}
             value={stats.completedCases}
             icon={CheckCircle}
             trend={{ value: 15, isPositive: true }}

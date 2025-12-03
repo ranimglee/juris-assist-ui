@@ -1,28 +1,51 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Mail } from "lucide-react";
+import { useLanguage } from "@/i18n";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/components/ui/use-toast";
+
+
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
+  const { t } = useLanguage();
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleSubmit = async () => {
     if (!email) {
-      alert("Veuillez entrer votre email");
+      toast({
+        variant: "destructive",
+        title: t("forgot.error.title"),
+        description: t("forgot.error.empty"),
+      });
       return;
     }
 
     try {
-      const res = await fetch("/api/forgot-password", {
+      const res = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
 
-      if (!res.ok) throw new Error("Erreur lors de l'envoi de la demande");
+      if (!res.ok) throw new Error(t("forgot.error.request"));
 
-      alert("Un email de réinitialisation a été envoyé !");
+      toast({
+        title: t("forgot.successTitle"),
+        description: t("forgot.success"),
+      });
+
+      navigate("/");
     } catch (error: any) {
-      alert(error.message || "Erreur inconnue");
+      toast({
+        variant: "destructive",
+        title: t("forgot.error.title"),
+        description: error.message || t("forgot.error.unknown"),
+      });
     }
   };
 
@@ -45,10 +68,10 @@ export default function ForgotPassword() {
           {/* Header */}
           <div className="text-center mb-8">
             <h1 className="text-3xl md:text-3xl font-bold text-red-700 mb-2">
-              Réinitialiser le mot de passe
+              {t("forgot.title")}
             </h1>
             <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">
-              Entrez votre adresse email pour recevoir un lien de réinitialisation
+              {t("forgot.subtitle")}
             </p>
           </div>
 
@@ -56,13 +79,13 @@ export default function ForgotPassword() {
           <div className="space-y-5">
             <div className="group">
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2 ml-1">
-                Email
+                {t("forgot.emailLabel")}
               </label>
               <div className="relative flex items-center border-2 border-slate-200 dark:border-slate-700 rounded-xl p-3.5 transition-all duration-200 focus-within:border-red-500 focus-within:ring-4 focus-within:ring-red-500/10 group-hover:border-slate-300 dark:group-hover:border-slate-600 bg-white dark:bg-slate-800/50">
                 <Mail className="w-5 h-5 text-slate-400 dark:text-slate-500 mr-3 flex-shrink-0" />
                 <input
                   type="email"
-                  placeholder="votre@email.com"
+                  placeholder={t("forgot.emailPlaceholder")}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full bg-transparent outline-none text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
@@ -74,20 +97,23 @@ export default function ForgotPassword() {
               onClick={handleSubmit}
               className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-semibold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
             >
-              Envoyer le lien
+              {t("forgot.submit")}
             </Button>
           </div>
 
           {/* Bottom Text */}
           <div className="mt-8 text-center text-sm text-slate-600 dark:text-slate-400">
-            <a href="/login" className="text-red-700 font-semibold hover:text-red-800">
-              Retour à la connexion
+            <a
+              href="/"
+              className="text-red-700 font-semibold hover:text-red-800"
+            >
+              {t("forgot.backToLogin")}
             </a>
           </div>
         </div>
 
         <p className="text-center text-sm text-white/70 mt-6">
-          © 2025 Ordre National Des Avocats De Tunisie. Tous droits réservés.
+          {t("forgot.footer")}
         </p>
       </div>
     </div>

@@ -14,6 +14,7 @@ export default function Login() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const { toast } = useToast(); 
 const [showPassword, setShowPassword] = useState(false);
+const [loading, setLoading] = useState(false);
 
 const handleLogin = async () => {
   if (!email || !password) {
@@ -21,24 +22,31 @@ const handleLogin = async () => {
     return;
   }
 
+  setLoading(true);
+
   try {
     const res = await fetch(`${API_BASE_URL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
-      credentials: "include", // important: include cookies in requests
+      credentials: "include",
     });
 
-    if (!res.ok) throw new Error(t("login.invalid"));
-
-    const data = await res.json();
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => null);
+      const backendMessage = errorData?.message;
+      throw new Error(backendMessage || t("login.invalid"));
+    }
 
     toast({ title: t("login.success"), variant: "default" });
     navigate("/dashboard");
   } catch (error: any) {
     toast({ title: error?.message || t("login.error"), variant: "destructive" });
+  } finally {
+    setLoading(false);
   }
 };
+
 
 
   return (
@@ -141,12 +149,18 @@ const handleLogin = async () => {
               </a>
             </div>
 
-            <Button
-              onClick={handleLogin}
-              className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800"
-            >
-              {t("login.submit")}
-            </Button>
+         <Button
+  onClick={handleLogin}
+  disabled={loading}
+  className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 flex items-center justify-center"
+>
+  {loading ? (
+    <span className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></span>
+  ) : (
+    t("login.submit")
+  )}
+</Button>
+
           </div>
 
          

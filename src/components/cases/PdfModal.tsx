@@ -17,6 +17,8 @@ import {
 } from "lucide-react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import { useLanguage } from "@/i18n";
+import { CaseStatus } from "@/types";
 
 interface CaseItem {
   caseNumber: string;
@@ -106,9 +108,7 @@ export default function PdfModal({ isOpen, onClose, caseItem }: PdfModalProps) {
   const pdfRef = useRef<HTMLDivElement>(null);
   const [signature, setSignature] = useState<string | null>(null);
 
-  const handleSignature = (dataUrl: string) => {
-    setSignature(dataUrl || null);
-  };
+
 
 const handleDownload = async () => {
   if (!pdfRef.current) return;
@@ -145,30 +145,52 @@ const handleDownload = async () => {
   pdf.save(`Affaire_${caseItem.caseNumber}.pdf`);
 };
 
-
-  const getStatusIcon = (status: string) => {
-    const statusMap: Record<string, { icon: any; color: string }> = {
-      "En cours": { icon: Clock, color: "text-blue-600" },
-      "Planifié": { icon: Calendar, color: "text-yellow-600" },
-      "Terminé": { icon: CheckCircle, color: "text-green-600" },
-      "Suspendu": { icon: XCircle, color: "text-red-600" },
-      "En attente": { icon: AlertCircle, color: "text-orange-600" }
-    };
-    return statusMap[status] || { icon: AlertCircle, color: "text-gray-600" };
+const getStatusLabel = (status: string) => {
+  const labels: Record<string, string> = {
+    EN_ATTENTE: "En attente",
+    EN_COURS: "En cours",
+    ACCEPTEE: "Acceptée",
+    REFUSEE: "Refusée",
+    CLOTUREE: "Clôturée",
   };
 
-  const getStatusBadgeColor = (status: string) => {
-    const statusMap: Record<string, string> = {
-      "En cours": "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
-      "Planifié": "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
-      "Terminé": "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
-      "Suspendu": "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
-      "En attente": "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300"
-    };
-    return statusMap[status] || "bg-gray-100 text-gray-800";
+  return labels[status] || status;
+};
+
+const getStatusIcon = (status: string) => {
+  const map: Record<string, any> = {
+    EN_ATTENTE: AlertCircle,
+    EN_COURS: Clock,
+    ACCEPTEE: CheckCircle,
+    REFUSEE: XCircle,
+    CLOTUREE: CheckCircle,
   };
 
-  const StatusIconComponent = getStatusIcon(caseItem.status).icon;
+  return map[status] || AlertCircle;
+};
+  const translateBackendStatus = (statut: string): CaseStatus => {
+    switch (statut) {
+      case "EN_ATTENTE": return "pending";
+      case "ASSIGNEE": return "assigned";
+      case "ACCEPTEE": return "accepted";
+      case "REFUSEE": return "rejected";
+      case "TERMINEE": return "completed";
+      default: return "pending";
+    }
+  };
+const getStatusBadgeColor = (status: string) => {
+  const map: Record<string, string> = {
+    EN_ATTENTE: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300",
+    EN_COURS: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
+    ACCEPTEE: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
+    REFUSEE: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
+    CLOTUREE: "bg-gray-200 text-gray-800 dark:bg-gray-800 dark:text-gray-300",
+  };
+
+  return map[status] || "bg-gray-100 text-gray-800";
+};
+
+const StatusIconComponent = getStatusIcon(caseItem.status);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -210,10 +232,12 @@ const handleDownload = async () => {
                       </p>
                     </div>
                   </div>
-                  <Badge className={`${getStatusBadgeColor(caseItem.status)} flex items-center gap-1.5 px-3 py-1`}>
-                    <StatusIconComponent className="w-3.5 h-3.5" />
-                    {caseItem.status}
-                  </Badge>
+                 <Badge
+  className={`${getStatusBadgeColor(caseItem.status)} flex items-center gap-1.5 px-3 py-1`}
+>
+  <StatusIconComponent className="w-3.5 h-3.5" />
+  {getStatusLabel(caseItem.status)}
+</Badge>
                 </div>
 
                 <div className="h-px bg-gradient-to-r from-transparent via-slate-300 to-transparent dark:via-slate-700 my-4" />
@@ -330,35 +354,6 @@ const handleDownload = async () => {
                     {caseItem.title}
                   </p>
                 </div>
-              </CardContent>
-            </Card>
-
-            {/* Signature Section */}
-            <Card className="border-2 border-dashed border-slate-300 dark:border-slate-700">
-              <CardContent className="p-6">
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4 flex items-center gap-2">
-                  <PenTool className="w-5 h-5 text-slate-600 dark:text-slate-400" />
-                  Signature numérique
-                </h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
-                  Signez ci-dessous pour authentifier ce document
-                </p>
-                
-                <SignaturePad onSign={handleSignature} />
-
-                {signature && (
-                  <div className="mt-4 p-4 bg-green-50 dark:bg-green-950 rounded-lg border border-green-200 dark:border-green-900">
-                    <p className="text-xs font-semibold text-green-700 dark:text-green-400 mb-2 flex items-center gap-1.5">
-                      <CheckCircle className="w-4 h-4" />
-                      Signature enregistrée
-                    </p>
-                    <img 
-                      src={signature} 
-                      alt="Signature" 
-                      className="h-24 border-2 border-green-300 dark:border-green-800 rounded bg-white" 
-                    />
-                  </div>
-                )}
               </CardContent>
             </Card>
 

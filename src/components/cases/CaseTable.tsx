@@ -306,6 +306,10 @@ export function CaseTable({
               <TableHead className="font-bold">
                 {t("cases.table.columns.type")}
               </TableHead>
+              <TableHead className="font-bold">
+                {t("cases.table.columns.sousType")}
+              </TableHead>
+
 
               <TableHead className="font-bold">
                 <Button 
@@ -370,6 +374,12 @@ export function CaseTable({
                         {caseItem.type.charAt(0).toUpperCase() + caseItem.type.slice(1)}
                       </Badge>
                     </TableCell>
+                    <TableCell>
+                       {caseItem.sousType
+                        ? caseItem.sousType.replace(/_/g, " ")
+                        : "-"}
+                    </TableCell>
+
                     <TableCell className="text-muted-foreground font-medium">
                       {caseItem.courtDate ? new Date(caseItem.courtDate).toLocaleDateString("fr-FR") : "-"}
                     </TableCell>

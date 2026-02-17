@@ -1,5 +1,6 @@
 import { LucideIcon } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { useLanguage } from "@/i18n";
 
 interface StatsCardProps {
   title: string;
@@ -13,6 +14,8 @@ interface StatsCardProps {
 }
 
 export function StatsCard({ title, value, icon: Icon, trend, gradient }: StatsCardProps) {
+   const { t } = useLanguage();
+
   return (
     <Card className="p-6 hover:shadow-elegant transition-all duration-300 hover:-translate-y-1 border-none shadow-card bg-gradient-to-br from-card to-muted/20">
       <div className="flex items-center justify-between">
@@ -24,7 +27,9 @@ export function StatsCard({ title, value, icon: Icon, trend, gradient }: StatsCa
               <span className={`text-sm font-semibold ${trend.isPositive ? "text-green-600" : "text-red-600"}`}>
                 {trend.isPositive ? "↑" : "↓"} {trend.value}%
               </span>
-              <span className="text-xs text-muted-foreground">ce mois</span>
+<span className="text-xs text-muted-foreground">
+  {t('common.thisMonth')}
+</span>
             </div>
           )}
         </div>

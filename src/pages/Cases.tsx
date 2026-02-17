@@ -1,156 +1,106 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { CaseTable } from "@/components/cases/CaseTable";
-import { Case, CaseStatus, CaseType } from "@/types";
+import { Case, CaseStatus, CaseType, SousType } from "@/types";
 import { CaseModal } from "@/components/cases/CaseModal";
 import { Button } from "@/components/ui/button";
 import { Plus, Briefcase, Scale, FileText, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/i18n";
+import { CaseService } from "@/services/case.service";
+import { SaveCaseDTO } from "@/services/case.types";
+
+import { CASE_TYPE_TO_BACKEND, toBackendSousType } from "@/services/case.mapper";
+const ACTIVE_STATUSES: CaseStatus[] = ["pending", "assigned", "accepted"];
 
 export default function Cases() {
   const [cases, setCases] = useState<Case[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCase, setEditingCase] = useState<Case | undefined>();
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const { t } = useLanguage();
 
-  useEffect(() => {
-    loadCases();
-  }, []);
+const loadCases = useCallback(async () => {
+  try {
+    const data = await CaseService.getAll();
+    setCases(data);
+  } catch (error) {
+    toast.error(t("cases.toast.loadError"));
+    console.error(error);
+  }
+}, [t]);
 
-  const loadCases = async () => {
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/affaires`);
-      const data = await res.json();
-      setCases(mapBackendToFront(data));
-      console.log(cases);
-    } catch (error) {
-      toast.error(t("cases.toast.loadError"));
-      console.error(error);
-    }
-  };
-const mapBackendToFront = (data: any[]): Case[] =>
-  data.map((a) => ({
-    id: Number(a.id),
-    caseNumber: a.numero,
-    title: a.titre,
-    type: a.type.toLowerCase() as CaseType,
-    nomAccuse: a.nomAccuse,
-    createdAt: a.dateCreation,
-    courtDate: a.dateTribunal,
-    status: translateBackendStatus(a.statut),
-    assignedLawyerId: a.avocatId ? String(a.avocatId) : undefined,
-    assignedLawyerName: a.avocatNom || undefined
-  }));
+useEffect(() => {
+  loadCases();
+}, [loadCases]);
 
-  const translateBackendStatus = (statut: string): CaseStatus => {
-    switch (statut) {
-      case "EN_ATTENTE": return "pending";
-      case "ASSIGNEE": return "assigned";
-      case "ACCEPTEE": return "accepted";
-      case "REFUSEE": return "rejected";
-      case "TERMINEE": return "completed";
-      default: return "pending";
-    }
-  };
+const handleDelete = async (caseId: number) => {
+  try {
+    await CaseService.remove(caseId);
 
-  const handleDelete = async (caseId: number) => {
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/affaires/${caseId}`, {
-        method: "DELETE",
-      });
-      if (!res.ok) throw new Error(t("cases.toast.deleteError"));
-      toast.success(t("cases.toast.deleteSuccess"));
-      setCases((prev) => prev.filter((c) => c.id !== caseId));
-    } catch (error: any) {
-      toast.error(error.message || t("cases.toast.deleteError"));
-      console.error(error);
-    }
-  };
+    setCases((prev) => prev.filter((c) => c.id !== caseId));
 
-  const handleSave = async (caseData: {
-    numero: string;
-    titre: string;
-    type: CaseType;
-    nomAccuse: string;
-    dateTribunal: string;
-  }) => {
-    const dto = {
-      numero: caseData.numero,
-      titre: caseData.titre,
-      type: caseData.type.toUpperCase(),
-      nomAccuse: caseData.nomAccuse,
-      dateTribunal: caseData.dateTribunal,
-    };
+    toast.success(t("cases.toast.deleteSuccess"));
+  } catch (error: any) {
+    toast.error(error.message || t("cases.toast.deleteError"));
+    console.error(error);
+  }
+};
 
-    try {
-      let savedCase: Case | null = null;
 
-      if (editingCase) {
-        const res = await fetch(
-          `${API_BASE_URL}/api/affaires/${editingCase.id}`,
-          {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(dto),
-          },
-        );
-        if (!res.ok) throw new Error(t("cases.toast.updateError"));
-        toast.success(t("cases.toast.updateSuccess"));
+const handleSave = async (caseData: {
+  numero: string;
+  titre: string;
+  type: CaseType;
+  sousType?: SousType;
+  nomAccuse: string;
+  dateTribunal: string;
+  assignmentMode: "AUTOMATIC" | "MANUAL";
+  assignedLawyerId?: string | null;
+}) => {
 
-        const updatedData = await res.json();
-        savedCase = {
-          id: Number(updatedData.id),
-          caseNumber: updatedData.numero,
-          title: updatedData.titre,
-          type: updatedData.type.toLowerCase() as CaseType,
-          nomAccuse: updatedData.nomAccuse,
-          createdAt: updatedData.dateCreation,
-          courtDate: updatedData.dateTribunal,
-          status: translateBackendStatus(updatedData.statut),
-          assignedLawyerId: updatedData.avocatId ? String(updatedData.avocatId) : undefined,
-          assignedLawyerName: updatedData.avocatAssigne?.nom || undefined
-        };
+  const dto: SaveCaseDTO = {
+  numero: caseData.numero,
+  titre: caseData.titre,
+  type: CASE_TYPE_TO_BACKEND[caseData.type],
+  sousType: toBackendSousType(caseData.sousType),
+  nomAccuse: caseData.nomAccuse,
+  dateTribunal: caseData.dateTribunal,
+  assignmentMode: caseData.assignmentMode,
+  avocatId: caseData.assignmentMode === "MANUAL" ? Number(caseData.assignedLawyerId) : null,
+};
 
-        setCases(prev => prev.map(c => c.id === savedCase!.id ? savedCase! : c));
-      } else {
-        const res = await fetch(`${API_BASE_URL}/api/affaires`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(dto),
-        });
-        if (!res.ok) throw new Error(t("cases.toast.createError"));
-        toast.success(t("cases.toast.createSuccess"));
 
-        const data = await res.json();
-        savedCase = {
-          id: Number(data.id),
-          caseNumber: data.numero,
-          title: data.titre,
-          type: data.type.toLowerCase() as CaseType,
-          nomAccuse: data.nomAccuse,
-          createdAt: data.dateCreation,
-          courtDate: data.dateTribunal,
-          status: translateBackendStatus(data.statut),
-          assignedLawyerId: data.avocatId ? String(data.avocatId) : undefined,
-          assignedLawyerName: data.avocatAssigne?.nom || undefined
-        };
+  try {
+    const savedCase = editingCase
+      ? await CaseService.update(editingCase.id, dto)
+      : await CaseService.create(dto);
 
-        setCases(prev => [savedCase!, ...prev]);
-      }
-    } catch (error: any) {
-      toast.error(error.message || t("cases.toast.saveError"));
-      console.error(error);
-    }
-  };
+    setCases((prev) =>
+      editingCase
+        ? prev.map((c) => (c.id === savedCase.id ? savedCase : c))
+        : [savedCase, ...prev]
+    );
+
+    toast.success(
+      editingCase
+        ? t("cases.toast.updateSuccess")
+        : t("cases.toast.createSuccess")
+    );
+
+    setIsModalOpen(false);
+    setEditingCase(undefined);
+  } catch (error: any) {
+    toast.error(error.message || t("cases.toast.saveError"));
+    console.error(error);
+  }
+};
 
   // Calculate statistics
   const stats = {
     total: cases.length,
     pending: cases.filter(c => c.status === "pending").length,
     assigned: cases.filter(c => c.status === "assigned").length,
-    active: cases.filter(c => ["pending", "assigned", "accepted"].includes(c.status)).length,
+    active: cases.filter(c => ACTIVE_STATUSES.includes(c.status)).length,
   };
 
   return (

@@ -1,5 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/i18n";
 
 interface DeleteLawyerModalProps {
   isOpen: boolean;
@@ -9,23 +10,26 @@ interface DeleteLawyerModalProps {
 }
 
 export function DeleteLawyerModal({ isOpen, onClose, onConfirm, lawyerName }: DeleteLawyerModalProps) {
+  const { t, lang } = useLanguage();
+  const isRTL = lang === "ar";
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[400px]">
+      <DialogContent dir={isRTL ? "rtl" : "ltr"} className="sm:max-w-[400px]">
         <DialogHeader>
-          <DialogTitle className="text-xl">Confirmer la suppression</DialogTitle>
+          <DialogTitle className="text-xl">{t("deleteLawyerModal.title")}</DialogTitle>
         </DialogHeader>
 
         <p className="mb-6">
-          Voulez-vous vraiment supprimer l'avocat <strong>{lawyerName}</strong> ?
+          {t("deleteLawyerModal.message", { name: lawyerName })}
         </p>
 
         <DialogFooter className="flex justify-end gap-2">
           <Button variant="outline" onClick={onClose}>
-            Annuler
+            {t("deleteLawyerModal.cancel")}
           </Button>
           <Button variant="destructive" onClick={onConfirm}>
-            Supprimer
+            {t("deleteLawyerModal.confirm")}
           </Button>
         </DialogFooter>
       </DialogContent>

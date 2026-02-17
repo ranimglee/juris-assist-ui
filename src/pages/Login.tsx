@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom"; 
 import { Button } from "@/components/ui/button";
 import {  Eye, EyeOff, Lock , User } from "lucide-react";
@@ -13,8 +13,25 @@ export default function Login() {
   const navigate = useNavigate(); 
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const { toast } = useToast(); 
-const [showPassword, setShowPassword] = useState(false);
-const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/auth/me`, {
+          credentials: "include",
+        });
+        if (res.ok) {
+          navigate("/dashboard", { replace: true });
+        }
+      } catch (error) {
+        // Not authenticated, stay on login page
+      }
+    };
+    checkAuth();
+  }, [API_BASE_URL, navigate]);
 
 const handleLogin = async () => {
   if (!email || !password) {

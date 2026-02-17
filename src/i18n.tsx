@@ -9,7 +9,16 @@ const translations: Translations = {
     "lang.fr": "Français",
     "lang.ar": "العربية",
     
-   
+    "charts.monthlyTrends.title": "Évolution mensuelle",
+  "charts.monthlyTrends.cases": "Affaires créées",
+  "charts.monthlyTrends.completed": "Affaires terminées",
+
+  "month.jan": "Jan",
+  "month.feb": "Fév",
+  "month.mar": "Mar",
+  "month.apr": "Avr",
+  "month.may": "Mai",
+  "month.jun": "Juin",
     // Navbar
     "navbar.account": "Mon Compte",
     "navbar.changePassword": "Changer le mot de passe",
@@ -32,6 +41,9 @@ const translations: Translations = {
     "login.invalid": "Identifiants incorrects",
     "login.success": "Connexion réussie",
     "login.error": "Erreur lors de la connexion",
+
+    // Auth
+    "auth.checking": "Vérification de l'authentification...",
 
     // Home / Index
     "home.hero.title": "Ordre National des Avocats de Tunisie",
@@ -81,7 +93,8 @@ const translations: Translations = {
       "© 2025 Ordre National Des Avocats De Tunisie. Tous droits réservés.",
 
     // Sidebar / Layout
-    "sidebar.tagline": "Gestion Juridique",
+    "sidebar.organizationName":"Ordre National Des avocats",
+    "sidebar.tagline": "Section Régionale des Avocats de Nabeul",
     "sidebar.nav.dashboard": "Dashboard",
     "sidebar.nav.lawyers": "Avocats",
     "sidebar.nav.cases": "Affaires",
@@ -126,7 +139,13 @@ const translations: Translations = {
     "lawyers.toast.exportExcelSuccess": "Excel téléchargé !",
     "lawyers.toast.exportExcelError":
       "Erreur lors du téléchargement du fichier Excel",
-
+"cases.modal.assignment": "Méthode d'affectation",
+"cases.modal.assignment.automatic": "Automatique ",
+"cases.modal.assignment.manual": "Manuelle",
+"cases.modal.selectLawyer": "Sélectionner un avocat",  
+"cases.modal.selectLawyerPlaceholder": "Choisissez un avocat...", 
+    
+  
     // Lawyers table
     "lawyers.table.searchPlaceholder":
       "Rechercher par nom, email ou région...",
@@ -141,13 +160,23 @@ const translations: Translations = {
     "lawyers.table.columns.name": "Nom & Prénom",
     "lawyers.table.columns.identifiant": "Identifiant",
 
-    
+        "common.thisMonth": "ce mois ",
+  "charts.lawyerPerformance.title": "Performance des avocats",
+  "charts.lawyerPerformance.legend.total": "Total",
+  "charts.lawyerPerformance.legend.completed": "Terminées",
+  "charts.lawyerPerformance.legend.active": "En cours",
     "lawyers.table.columns.contact": "Contact",
     "lawyers.table.columns.region": "Région",
     "lawyers.table.columns.registration": "Inscription",
     "lawyers.table.columns.cases": "Affaires",
     "lawyers.table.columns.performance": "Performance",
     "lawyers.table.columns.actions": "Actions",
+     "charts.caseStatus.title": "Répartition des affaires",
+  "case.status.pending": "En attente",
+  "case.status.assigned": "Assignées",
+  "case.status.accepted": "Acceptées",
+  "case.status.completed": "Terminées",
+  "case.status.rejected": "Rejetées",
 
     // Lawyers modal
     "lawyers.modal.title.edit": "Modifier l'avocat",
@@ -242,13 +271,14 @@ const translations: Translations = {
     "cases.modal.type": "Type d'affaire",
     "cases.modal.type.placeholder": "Sélectionnez un type",
     "cases.modal.type.criminel": "Criminel",
-    "cases.modal.type.enquête": "Enquête",
-    "cases.modal.type.civil": "Civil",
+   "cases.modal.type.enquete": "Enquête",
+  "cases.modal.type.enqueteur_preliminaire": "Enquêteur préliminaire",
     "cases.modal.accused": "Nom de l'accusé",
     "cases.modal.accused.placeholder": "Ex: Jean Dupont",
-    "cases.modal.courtDate": "Date du tribunal",
+    "cases.modal.courtDate": "Date d'audience",
     "cases.modal.cancel": "Annuler",
     "cases.modal.save": "Enregistrer",
+"cases.modal.saving": "Enregistrement en cours...",
     "cases.modal.error.numberRequired": "Numéro obligatoire",
     "cases.modal.error.titleRequired": "Titre obligatoire",
     "cases.modal.error.min3": "Minimum 3 caractères",
@@ -256,7 +286,7 @@ const translations: Translations = {
       "Nom de l'accusé obligatoire",
     "cases.modal.error.min2": "Minimum 2 caractères",
     "cases.modal.error.courtDateRequired":
-      "Date du tribunal obligatoire",
+      "Date d'audience obligatoire",
 
     // Forgot password
     "forgot.title": "Réinitialiser le mot de passe",
@@ -344,11 +374,118 @@ const translations: Translations = {
   "reset.error.mismatch": "Les mots de passe ne correspondent pas.",
   "reset.error.request": "Impossible de réinitialiser le mot de passe.",
   "reset.error.unknown": "Une erreur inconnue est survenue.",
+
+  "lawyerDetails.contactInfo": "Informations de contact",
+  "lawyerDetails.email": "Email",
+  "lawyerDetails.phone": "Téléphone",
+  "lawyerDetails.region": "Région",
+  "lawyerDetails.address": "Adresse",
+  "lawyerDetails.assignedCases": "Affaires assignées",
+  "lawyerDetails.noCases": "Aucune affaire assignée",
+  "lawyerDetails.loadingCases": "Chargement des affaires...",
+  "lawyerDetails.error": "Erreur",
+  "lawyerDetails.lawyer": "Avocat",
+  "lawyerDetails.close": "Fermer",
+  "lawyerDetails.createdOn": "Créé le",
+  "lawyerDetails.courtDate": "Audience",
+
+   "deleteLawyerModal.title": "Confirmer la suppression",
+  "deleteLawyerModal.message": "Voulez-vous vraiment supprimer l'avocat {name} ?",
+  "deleteLawyerModal.cancel": "Annuler",
+  "deleteLawyerModal.confirm": "Supprimer",
+   "deleteCaseModal.title": "Confirmer la suppression",
+  "deleteCaseModal.message": "Voulez-vous vraiment supprimer l'affaire {caseNumber} ?",
+  "deleteCaseModal.cancel": "Annuler",
+  "deleteCaseModal.confirm": "Supprimer",
+    "pdfModal.title": "Dossier Juridique",
+  "pdfModal.ref": "Document officiel - Affaire N° {caseNumber}",
+  "pdfModal.caseType": "Type d'affaire",
+  "pdfModal.createdAt": "Date de création",
+  "pdfModal.courtDate": "Date d'audience",
+  "pdfModal.status": "Statut actuel",
+  "pdfModal.accusedName": "Nom de l'accusé",
+  "pdfModal.assignedLawyer": "Avocat assigné",
+  "pdfModal.description": "Description de l'affaire",
+  "pdfModal.signature": "Signature numérique",
+  "pdfModal.signatureText": "Signez ci-dessous pour authentifier ce document",
+  "pdfModal.signatureSaved": "Signature enregistrée",
+  "pdfModal.footerInfo": "Ce document est généré automatiquement et constitue un récapitulatif officiel de l'affaire. Généré le {dateTime}",
+  "pdfModal.close": "Fermer",
+  "pdfModal.download": "Télécharger PDF",
+  "pdfModal.ready": "Document prêt à être téléchargé",
+  "pdfModal.notPlanned": "Non planifiée",
+  "cases.table.columns.sousType":"Sous-type",
+  "cases.modal.sousType":"Sous-type ",
+  "cases.modal.sousType.placeholder":" Sélectioner un sous-type",
+
+      "cases.sousType.TRIBUNAL_PREMIERE_INSTANCE_NABEUL": "Tribunal de première instance de Nabeul",
+      "cases.sousType.TRIBUNAL_PREMIERE_INSTANCE_KORBA": "Tribunal de première instance de Korba",
+      "cases.sousType.COUR_APPEL_NABEUL": "Cour d’appel de Nabeul",
+      "cases.sousType.NABEUL": "Nabeul",
+      "cases.sousType.ZAGHOUAN": "Zaghouan",
+      "cases.sousType.GROMBALIA": "Grombalia",
+    
   },
   ar: {
     "lang.fr": "Français",
     "lang.ar": "العربية",
+    "cases.table.columns.sousType":"النوع الفرعي",
+    "cases.modal.sousType":"النوع الفرعي",
+    "cases.modal.sousType.placeholder": "اختر نوعًا فرعيًا",
 
+  "cases.sousType.TRIBUNAL_PREMIERE_INSTANCE_NABEUL": "المحكمة الابتدائية بنابل",
+  "cases.sousType.TRIBUNAL_PREMIERE_INSTANCE_KORBA": "المحكمة الابتدائية بقربة",
+  "cases.sousType.COUR_APPEL_NABEUL": "محكمة الاستئناف بنابل",
+  "cases.sousType.NABEUL": "نابل",
+  "cases.sousType.ZAGHOUAN": "زغوان",
+  "cases.sousType.GROMBALIA": "قرمبالية",
+  "pdfModal.title": "الملف القانوني",
+  "pdfModal.ref": "وثيقة رسمية - القضية رقم {caseNumber}",
+  "pdfModal.caseType": "نوع القضية",
+  "pdfModal.createdAt": "تاريخ الإنشاء",
+  "pdfModal.courtDate": "تاريخ الجلسة",
+  "pdfModal.status": "الحالة الحالية",
+  "pdfModal.accusedName": "اسم المتهم",
+  "pdfModal.assignedLawyer": "المحامي المعين",
+  "pdfModal.description": "وصف القضية",
+  "pdfModal.signature": "التوقيع الرقمي",
+  "pdfModal.signatureText": "وقع أدناه للتحقق من صحة هذه الوثيقة",
+  "pdfModal.signatureSaved": "تم حفظ التوقيع",
+  "pdfModal.footerInfo": "تم إنشاء هذه الوثيقة تلقائيًا وهي ملخص رسمي للقضية. تم الإنشاء في {dateTime}",
+  "pdfModal.close": "إغلاق",
+  "pdfModal.download": "تحميل PDF",
+  "pdfModal.ready": "الوثيقة جاهزة للتحميل",
+  "pdfModal.notPlanned": "غير محددة",
+    "deleteCaseModal.title": "تأكيد الحذف",
+  "deleteCaseModal.message": "هل تريد حقًا حذف القضية {caseNumber}؟",
+  "deleteCaseModal.cancel": "إلغاء",
+  "deleteCaseModal.confirm": "حذف",
+ "charts.monthlyTrends.title": "التطور الشهري",
+  "charts.monthlyTrends.cases": "قضايا مُنشأة",
+  "charts.monthlyTrends.completed": "قضايا مُنجزة",
+ "lawyerDetails.contactInfo": "معلومات التواصل",
+  "lawyerDetails.email": "البريد الإلكتروني",
+  "lawyerDetails.phone": "رقم الهاتف",
+  "lawyerDetails.region": "المنطقة",
+  "lawyerDetails.address": "العنوان",
+  "lawyerDetails.assignedCases": "القضايا المعينة",
+  "lawyerDetails.noCases": "لا توجد قضايا معينة",
+  "lawyerDetails.loadingCases": "جاري تحميل القضايا...",
+  "lawyerDetails.error": "خطأ",
+  "lawyerDetails.lawyer": "محامي",
+  "lawyerDetails.close": "إغلاق",
+  "lawyerDetails.createdOn": "تاريخ الإنشاء",
+  "lawyerDetails.courtDate": "تاريخ الجلسة",
+  "month.jan": "جانفي",
+  "month.feb": "فيفري",
+  "month.mar": "مارس",
+  "month.apr": "أفريل",
+  "month.may": "ماي",
+  "month.jun": "جوان",
+  "deleteLawyerModal.title": "تأكيد الحذف",
+  "deleteLawyerModal.message": "هل تريد حقًا حذف المحامي {name}؟",
+  "deleteLawyerModal.cancel": "إلغاء",
+  "deleteLawyerModal.confirm": "حذف",
     // Navbar
     "navbar.account": "حسابي",
     "navbar.changePassword": "تغيير كلمة المرور",
@@ -371,6 +508,13 @@ const translations: Translations = {
     "login.invalid": "معطيات الدخول غير صحيحة",
     "login.success": "تم تسجيل الدخول بنجاح",
     "login.error": "خطأ أثناء عملية تسجيل الدخول",
+"cases.modal.assignment": "طريقة التعيين",
+"cases.modal.assignment.automatic": "تلقائي ",
+"cases.modal.assignment.manual": "يدوي",
+"cases.modal.selectLawyer": "اختر المحامي",  
+"cases.modal.selectLawyerPlaceholder": "اختر محامي...", 
+    // Auth
+    "auth.checking": "التحقق من الهوية...",
 
     // Home / Index
     "home.hero.title": "الهيئة الوطنية للمحامين بتونس",
@@ -421,8 +565,10 @@ const translations: Translations = {
       "© 2025 الهيئة الوطنية للمحامين بتونس. كل الحقوق محفوظة.",
 
     // Sidebar / Layout
-    "sidebar.tagline": "منظومة التصرف القانوني",
-    "sidebar.nav.dashboard": "اللوحة الرئيسة",
+    // Sidebar / Layout
+    "sidebar.organizationName":"الهيئة الوطنية للمحامين",
+    "sidebar.tagline": "الفرع الجهوي للمحامين بنابل", 
+       "sidebar.nav.dashboard": "اللوحة الرئيسة",
     "sidebar.nav.lawyers": "المحامون",
     "sidebar.nav.cases": "القضايا",
     "sidebar.admin": "المشرف",
@@ -442,8 +588,8 @@ const translations: Translations = {
     "lawyers.subtitle":
       "أضف، عدّل وتابع فريق المحامين الخاص بك",
     "lawyers.add": "إضافة محامٍ",
-    "lawyers.exportPdf": "تصدير PDF",
-    "lawyers.exportExcel": "تصدير Excel",
+    "lawyers.exportPdf": "حفظ كملف PDF",
+    "lawyers.exportExcel": "حفظ كملف Excel",
     "lawyers.stats.total": "إجمالي المحامين",
     "lawyers.stats.active": "النشطون",
     "lawyers.stats.specialties": "الاختصاصات",
@@ -475,11 +621,14 @@ const translations: Translations = {
       "تم تنزيل ملف Excel بنجاح!",
     "lawyers.toast.exportExcelError":
       "خطأ أثناء تنزيل ملف Excel",
-
+  "charts.lawyerPerformance.title": "أداء المحامين",
+  "charts.lawyerPerformance.legend.total": "الإجمالي",
+  "charts.lawyerPerformance.legend.completed": "منتهية",
+  "charts.lawyerPerformance.legend.active": "قيد المعالجة",
     // Lawyers table
     "lawyers.table.searchPlaceholder":
       "البحث حسب الاسم أو البريد أو الجهة...",
-    "lawyers.table.results": "{count} نتيجة{suffix}",
+    "lawyers.table.results": "{count} نتيجة",
     "lawyers.table.empty.title": "لا يوجد أي محامٍ مسجّل",
     "lawyers.table.empty.subtitle":
       "ابدأ بإضافة أول محامٍ لظهوره في هذه القائمة.",
@@ -510,6 +659,7 @@ const translations: Translations = {
     "lawyers.modal.firstName.placeholder": "مثال: أحمد",
     "lawyers.modal.identifiant": "المعرف",
 "lawyers.modal.identifiant.placeholder": "مثال: 00000",
+"cases.modal.saving": "جارٍ حفظ البيانات...",
 
     "lawyers.modal.lastName": "اللقب",
     "lawyers.modal.lastName.placeholder": "مثال: بن صالح",
@@ -540,8 +690,8 @@ const translations: Translations = {
     "cases.stats.pending": "في الانتظار",
     "cases.stats.assigned": "مكلّفة",
     "cases.stats.active": "نشِطة",
-    "cases.list.title": "قائمة القضايا",
-    "cases.list.count": "{count} قضية في المجموع",
+    "cases.list.title": "قائمة التساخير القانونية",
+    "cases.list.count": "{count} تسخير في المجموع",
     "cases.toast.loadError": "خطأ أثناء تحميل القضايا",
     "cases.toast.deleteSuccess": "تم حذف القضية",
     "cases.toast.deleteError":
@@ -557,12 +707,22 @@ const translations: Translations = {
     "cases.toast.saveError":
       "خطأ أثناء عملية الحفظ",
 
+      
+
+        "charts.caseStatus.title": "توزيع القضايا",
+  "case.status.pending": "قيد الانتظار",
+  "case.status.assigned": "مُسندة",
+  "case.status.accepted": "مقبولة",
+  "case.status.completed": "منتهية",
+  "case.status.rejected": "مرفوضة",
+
     // Cases table
     "cases.table.searchPlaceholder":
       "البحث حسب رقم القضية، العنوان، النوع أو المحامي...",
     "cases.table.status.all": "جميع الحالات",
     "cases.table.loading": "جاري التحميل...",
-    "cases.table.results": "{count} نتيجة{suffix}",
+    "cases.table.results": "{count} نتيجة",
+    "common.thisMonth": "هذا الشهر",
     "cases.table.empty.title": "لا توجد أي قضية مسجّلة",
     "cases.table.empty.subtitle":
       "ابدأ بإنشاء أول قضية لظهورها في هذه القائمة.",
@@ -596,8 +756,8 @@ const translations: Translations = {
     "cases.modal.type": "نوع القضية",
     "cases.modal.type.placeholder": "اختر نوع القضية",
     "cases.modal.type.criminel": "جنائية",
-    "cases.modal.type.enquête": "بحث",
-    "cases.modal.type.civil": "مدنية",
+  "cases.modal.type.enquete": "تحقيق",
+  "cases.modal.type.enqueteur_preliminaire": "بحث بداية",
     "cases.modal.accused": "اسم المتهم",
     "cases.modal.accused.placeholder": "مثال: أحمد بن صالح",
     "cases.modal.courtDate": "تاريخ الجلسة",

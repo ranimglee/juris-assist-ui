@@ -14,6 +14,13 @@ export interface Lawyer {
   lastAssignedAt?: string | null;
 }
 
+export type SousType =
+  | "TRIBUNAL_PREMIERE_INSTANCE_NABEUL"
+  | "TRIBUNAL_PREMIERE_INSTANCE_KORBA"
+  | "COUR_APPEL_NABEUL"
+  | "NABEUL"
+  | "ZAGHOUAN"
+  | "GROMBALIA";
 
 export type CaseType = "criminel" | "enquete" | "enqueteur_preliminaire";
 
@@ -24,6 +31,7 @@ export type Case = {
   caseNumber: string;
   title: string;
   type: CaseType;
+  sousType?:SousType;
   nomAccuse: string; // nomAccuse
   createdAt: string;
   courtDate: string;
@@ -44,6 +52,8 @@ export type AffaireFormData = {
   numero: string;
   titre: string;
   type: CaseType;
+  sousType?: SousType;
   nomAccuse: string;
   dateTribunal: string;
 };
+export type AssignmentMode = "AUTOMATIC" | "MANUAL";

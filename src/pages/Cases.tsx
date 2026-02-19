@@ -18,7 +18,12 @@ export default function Cases() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCase, setEditingCase] = useState<Case | undefined>();
   const { t } = useLanguage();
-
+const [currentPage, setCurrentPage] = useState(1);
+const [itemsPerPage] = useState(10); // You can adjust this number
+const indexOfLast = currentPage * itemsPerPage;
+const indexOfFirst = indexOfLast - itemsPerPage;
+const currentCases = cases.slice(indexOfFirst, indexOfLast);
+const totalPages = Math.ceil(cases.length / itemsPerPage);
 const loadCases = useCallback(async () => {
   try {
     const data = await CaseService.getAll();
@@ -215,7 +220,7 @@ const handleSave = async (caseData: {
               </div>
             <div className="overflow-x-auto">
               <CaseTable
-                cases={cases}
+                cases={currentCases}
                 onEdit={(c) => {
                   setEditingCase(c);
                   setIsModalOpen(true);
@@ -229,6 +234,31 @@ const handleSave = async (caseData: {
               />
             </div>
           </div>
+
+                 {/* Pagination */}
+{cases.length > itemsPerPage && (
+  <div className="flex justify-end items-center mt-4 gap-3">
+    <Button
+      onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+      disabled={currentPage === 1}
+      size="sm"
+      variant="outline"
+    >
+      {t("pagination.prev")}
+    </Button>
+    <span className="px-2 py-1 text-sm font-medium">
+      {t("pagination.pageOf", { current: currentPage, total: totalPages })}
+    </span>
+    <Button
+      onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+      disabled={currentPage === totalPages}
+      size="sm"
+      variant="outline"
+    >
+      {t("pagination.next")}
+    </Button>
+  </div>
+)}
         </div>
 
         <CaseModal

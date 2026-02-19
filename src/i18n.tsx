@@ -425,6 +425,13 @@ const translations: Translations = {
       "cases.sousType.ZAGHOUAN": "Zaghouan",
       "cases.sousType.GROMBALIA": "Grombalia",
     
+  "pagination.prev": "Précédent",
+      
+  "pagination.next": "Suivant",
+      
+  "pagination.pageOf": "Page {{current}} sur {{total}}"
+  
+    
   },
   ar: {
     "lang.fr": "Français",
@@ -432,6 +439,11 @@ const translations: Translations = {
     "cases.table.columns.sousType":"النوع الفرعي",
     "cases.modal.sousType":"النوع الفرعي",
     "cases.modal.sousType.placeholder": "اختر نوعًا فرعيًا",
+
+  "pagination.prev": "السابق",
+  "pagination.next": "التالي",
+  "pagination.pageOf": "الصفحة {{current}} من {{total}}",
+
 
   "cases.sousType.TRIBUNAL_PREMIERE_INSTANCE_NABEUL": "المحكمة الابتدائية بنابل",
   "cases.sousType.TRIBUNAL_PREMIERE_INSTANCE_KORBA": "المحكمة الابتدائية بقربة",

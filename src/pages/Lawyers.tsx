@@ -21,6 +21,12 @@ export default function Lawyers() {
   const [editingLawyer, setEditingLawyer] = useState<Lawyer | undefined>();
   const [isLoading, setIsLoading] = useState(true);
   const { t } = useLanguage();
+const [currentPage, setCurrentPage] = useState(1);
+const [itemsPerPage] = useState(10); // You can adjust this number
+const indexOfLast = currentPage * itemsPerPage;
+const indexOfFirst = indexOfLast - itemsPerPage;
+const currentLawyers = lawyers.slice(indexOfFirst, indexOfLast);
+const totalPages = Math.ceil(lawyers.length / itemsPerPage);
 
   useEffect(() => {
     loadLawyers();
@@ -287,13 +293,40 @@ const exportExcel = async () => {
               </div>
 
             <div className="overflow-x-auto">
-              <LawyerTable
-                lawyers={lawyers}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-              />
+             <LawyerTable
+  lawyers={currentLawyers}
+  onEdit={handleEdit}
+  onDelete={handleDelete}
+/>
+
             </div>
+
+            {/* Pagination */}
+{lawyers.length > itemsPerPage && (
+  <div className="flex justify-end items-center mt-4 gap-3">
+    <Button
+      onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+      disabled={currentPage === 1}
+      size="sm"
+      variant="outline"
+    >
+      {t("pagination.prev")}
+    </Button>
+    <span className="px-2 py-1 text-sm font-medium">
+      {t("pagination.pageOf", { current: currentPage, total: totalPages })}
+    </span>
+    <Button
+      onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+      disabled={currentPage === totalPages}
+      size="sm"
+      variant="outline"
+    >
+      {t("pagination.next")}
+    </Button>
+  </div>
+)}
             </div>
+            
           )}
           
         </div>
@@ -305,7 +338,7 @@ const exportExcel = async () => {
           lawyer={editingLawyer}
         />
       </div>
-      
+
     </Layout>
   );
 }

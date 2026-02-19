@@ -104,7 +104,7 @@ const handleSave = async (caseData: {
   const stats = {
     total: cases.length,
     pending: cases.filter(c => c.status === "pending").length,
-    assigned: cases.filter(c => c.status === "assigned").length,
+    accepted: cases.filter(c => c.status === "accepted").length,
     active: cases.filter(c => ACTIVE_STATUSES.includes(c.status)).length,
   };
 
@@ -182,7 +182,7 @@ const handleSave = async (caseData: {
                   <p className="text-sm font-medium text-slate-600 mb-1">
                     {t("cases.stats.assigned")}
                   </p>
-                  <p className="text-3xl font-bold text-indigo-600">{stats.assigned}</p>
+                  <p className="text-3xl font-bold text-indigo-600">{stats.accepted}</p>
                 </div>
                 <div className="p-3 bg-indigo-50 rounded-xl">
                   <Scale className="w-6 h-6 text-indigo-600" />

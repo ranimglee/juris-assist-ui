@@ -187,7 +187,7 @@ const Index = () => {
                 <h3 className="font-serif font-semibold text-primary mb-2">
                   {t("home.contact.phone")}
                 </h3>
-                <p className="text-muted-foreground font-sans">+216 XX XXX XXX</p>
+                <p className="text-muted-foreground font-sans">+216 XX XXXXX X</p>
               </div>
 
               <div className="text-center">

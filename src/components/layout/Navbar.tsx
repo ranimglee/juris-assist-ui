@@ -21,7 +21,22 @@ export function Navbar() {
   const toggleLang = () => {
     setLang(lang === "fr" ? "ar" : "fr");
   };
+const handleLogout = async () => {
+  try {
+    const res = await fetch(`${API_BASE_URL}/auth/logout`, {
+      method: "POST",
+      credentials: "include",
+    });
 
+    if (!res.ok) throw new Error("Logout failed");
+
+    // Force reload to ensure cookies/session cleared
+    window.location.href = "/";
+  } catch (error) {
+    console.error("Logout error:", error);
+    alert(t("navbar.logout.failed")); // fallback
+  }
+};
   return (
     <header className="h-16 border-b border-border bg-background flex items-center justify-end px-6 gap-4">
       {/* Language Switcher */}
@@ -56,20 +71,9 @@ export function Navbar() {
           </DropdownMenuItem>
 
           <DropdownMenuSeparator />
-         <DropdownMenuItem
+  <DropdownMenuItem
   className="text-destructive"
-  onClick={async () => {
-    try {
-      await fetch(`${API_BASE_URL}/auth/logout`, {
-        method: "POST",
-        credentials: "include", // important to send cookies
-      });
-      toast({ title: t("navbar.logout.success") });
-      navigate("/");
-    } catch (error) {
-      toast({ title: t("navbar.logout.failed"), variant: "destructive" });
-    }
-  }}
+  onClick={handleLogout}
 >
   <LogOut className="mr-2 h-4 w-4" />
   <span>{t("navbar.logout")}</span>

@@ -25,14 +25,22 @@ export function Sidebar() {
       .catch(console.error);
   }, [API_BASE_URL]);
 
-  const handleLogout = () => {
-    fetch(`${API_BASE_URL}/auth/logout`, {
+const handleLogout = async () => {
+  try {
+    const res = await fetch(`${API_BASE_URL}/auth/logout`, {
       method: "POST",
       credentials: "include",
-    }).finally(() => {
-      window.location.href = "/";
     });
-  };
+
+    if (!res.ok) throw new Error("Logout failed");
+
+    // Force reload to reset session state
+    window.location.href = "/";
+  } catch (error) {
+    console.error("Logout error:", error);
+    alert(t("navbar.logout.failed")); // fallback
+  }
+};
 
   return (
     <aside

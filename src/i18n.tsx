@@ -93,7 +93,7 @@ const translations: Translations = {
       "© 2025 Ordre National Des Avocats De Tunisie. Tous droits réservés.",
 
     // Sidebar / Layout
-    "sidebar.organizationName":"Ordre National Des avocats",
+    "sidebar.organizationName":"Ordre National Des avocats de Nabeul",
     "sidebar.tagline": "Section Régionale des Avocats de Nabeul",
     "sidebar.nav.dashboard": "Dashboard",
     "sidebar.nav.lawyers": "Avocats",
@@ -101,7 +101,10 @@ const translations: Translations = {
     "sidebar.admin": "Admin",
     "sidebar.admin.email": "admin@onat.tn",
     "sidebar.logout": "Se déconnecter",
-
+"charts.yearlyTrends.title": "Évolution annuelle des inscriptions des avocats",
+      "charts.yearlyTrends.lawyers": "Avocats",
+    
+  
     // Dashboard
     "dashboard.title": "Tableau de bord",
     "dashboard.subtitle": "Vue d'ensemble de votre gestion juridique",
@@ -109,6 +112,9 @@ const translations: Translations = {
     "dashboard.stats.casesTotal": "Affaires totales",
     "dashboard.stats.casesActive": "Affaires en cours",
     "dashboard.stats.casesCompleted": "Affaires terminées",
+    "dashboard.stats.casesAssigned": "Affaires assignées",
+    "dashboard.stats.casesUnassigned": "Affaires non assignées",
+    "dashboard.stats.pendingCases": "Affaires en attente",
 
     // Lawyers page
     "lawyers.title": "Gestion des avocats",
@@ -172,11 +178,20 @@ const translations: Translations = {
     "lawyers.table.columns.performance": "Performance",
     "lawyers.table.columns.actions": "Actions",
      "charts.caseStatus.title": "Répartition des affaires",
+     
   "case.status.pending": "En attente",
   "case.status.assigned": "Assignées",
   "case.status.accepted": "Acceptées",
   "case.status.completed": "Terminées",
   "case.status.rejected": "Rejetées",
+
+  "charts.casesByType.title": "Répartition par type d'affaire",
+  "charts.casesByRegion.title": "Affaires par région",
+  "charts.casesByRegion.legend.cases": "Affaires",
+  "charts.lawyersByRegion.title": "Avocats par région",
+  "charts.lawyersByRegion.legend.lawyers": "Avocats",
+  "charts.monthlyCasesTrends.title": "Tendances mensuelles des affaires",
+  "charts.monthlyCasesTrends.cases": "Affaires",
 
     // Lawyers modal
     "lawyers.modal.title.edit": "Modifier l'avocat",
@@ -220,7 +235,7 @@ const translations: Translations = {
     "cases.stats.total": "Total des affaires",
     "cases.stats.pending": "En attente",
     "cases.stats.assigned": "Acceptées",
-    "cases.stats.active": "Actives",
+    "cases.stats.completed": "Terminées",
     "cases.list.title": "Liste des affaires",
     "cases.list.count": "{count} affaire{suffix} au total",
     "cases.toast.loadError": "Erreur de chargement des affaires",
@@ -270,9 +285,11 @@ const translations: Translations = {
     "cases.modal.title.placeholder": "Ex: Affaire de fraude fiscale",
     "cases.modal.type": "Type d'affaire",
     "cases.modal.type.placeholder": "Sélectionnez un type",
+
     "cases.modal.type.criminel": "Criminel",
    "cases.modal.type.enquete": "Enquête",
   "cases.modal.type.enqueteur_preliminaire": "Enquêteur préliminaire",
+
     "cases.modal.accused": "Nom de l'accusé",
     "cases.modal.accused.placeholder": "Ex: Jean Dupont",
     "cases.modal.courtDate": "Date d'audience",
@@ -429,9 +446,15 @@ const translations: Translations = {
       
   "pagination.next": "Suivant",
       
-  "pagination.pageOf": "Page {{current}} sur {{total}}"
-  
-    
+  "pagination.pageOf": "Page {{current}} sur {{total}}",
+  "cases.types.CRIMINEL": "Criminel",
+  "cases.types.ENQUETE": "Enquête",
+  "cases.types.ENQUETEUR_PRELIMINAIRE": "Enquête préliminaire",
+    "case.status.en_attente": "En attente",
+  "case.status.acceptee": "Acceptée",
+  "case.status.rejetee": "Rejetée",
+  "case.status.assignee": "Assignée",
+  "case.status.completee": "Terminée"
   },
   ar: {
     "lang.fr": "Français",
@@ -475,6 +498,8 @@ const translations: Translations = {
  "charts.monthlyTrends.title": "التطور الشهري",
   "charts.monthlyTrends.cases": "قضايا مُنشأة",
   "charts.monthlyTrends.completed": "قضايا مُنجزة",
+  "charts.yearlyTrends.title": "تطور تسجيل المحامين عبر السنوات",
+  "charts.yearlyTrends.lawyers": "المحامين",
  "lawyerDetails.contactInfo": "معلومات التواصل",
   "lawyerDetails.email": "البريد الإلكتروني",
   "lawyerDetails.phone": "رقم الهاتف",
@@ -498,12 +523,22 @@ const translations: Translations = {
   "deleteLawyerModal.message": "هل تريد حقًا حذف المحامي {name}؟",
   "deleteLawyerModal.cancel": "إلغاء",
   "deleteLawyerModal.confirm": "حذف",
+
+  "charts.casesByType.title": "القضايا حسب النوع",
+  "cases.types.CRIMINEL": "جنائية",
+  "cases.types.ENQUETE": "تحقيق",
+  "cases.types.ENQUETEUR_PRELIMINAIRE": "باحث بداية",
     // Navbar
     "navbar.account": "حسابي",
     "navbar.changePassword": "تغيير كلمة المرور",
     "navbar.logout": "تسجيل الخروج",
     "navbar.logout.success": "تم تسجيل الخروج بنجاح",
-
+    "case.status.en_attente": "قيد الانتظار",
+      "case.status.acceptee": "مقبولة",
+      "case.status.rejetee": "مرفوضة",
+      "case.status.assignee": "مخصصة",
+      "case.status.completee": "مغلقة",
+  
     // Login
     "login.title": "مسؤول التوزيع",
     "login.subtitle": "ولوج آمن إلى فضائكم المهني",
@@ -578,7 +613,7 @@ const translations: Translations = {
 
     // Sidebar / Layout
     // Sidebar / Layout
-    "sidebar.organizationName":"الهيئة الوطنية للمحامين",
+    "sidebar.organizationName":"الهيئة الوطنية للمحامين بنابل",
     "sidebar.tagline": "الفرع الجهوي للمحامين بنابل", 
        "sidebar.nav.dashboard": "اللوحة الرئيسة",
     "sidebar.nav.lawyers": "المحامون",
@@ -594,6 +629,8 @@ const translations: Translations = {
     "dashboard.stats.casesTotal": "إجمالي القضايا",
     "dashboard.stats.casesActive": "القضايا الجارية",
     "dashboard.stats.casesCompleted": "القضايا المغلقة",
+    "dashboard.stats.casesAssigned": "القضايا المسندة",
+    "dashboard.stats.pendingCases": "القضايا قيد الانتظار",
 
     // Lawyers page
     "lawyers.title": "إدارة المحامين",
@@ -701,7 +738,7 @@ const translations: Translations = {
     "cases.stats.total": "إجمالي القضايا",
     "cases.stats.pending": "في الانتظار",
     "cases.stats.assigned": "مقبولة",
-    "cases.stats.active": "نشِطة",
+"cases.stats.completed": "منتهية",
     "cases.list.title": "قائمة التساخير القانونية",
     "cases.list.count": "{count} تسخير في المجموع",
     "cases.toast.loadError": "خطأ أثناء تحميل القضايا",
@@ -718,7 +755,7 @@ const translations: Translations = {
       "تم إنشاء القضية بنجاح",
     "cases.toast.saveError":
       "خطأ أثناء عملية الحفظ",
-
+      
       
 
         "charts.caseStatus.title": "توزيع القضايا",
@@ -727,6 +764,13 @@ const translations: Translations = {
   "case.status.accepted": "مقبولة",
   "case.status.completed": "منتهية",
   "case.status.rejected": "مرفوضة",
+
+  "charts.casesByRegion.title": "القضايا حسب الجهة",
+  "charts.casesByRegion.legend.cases": "القضايا",
+  "charts.lawyersByRegion.title": "المحامين حسب الجهة",
+  "charts.lawyersByRegion.legend.lawyers": "المحامين",
+  "charts.monthlyCasesTrends.title": "تطور القضايا شهريًا",
+  "charts.monthlyCasesTrends.cases": "القضايا",
 
     // Cases table
     "cases.table.searchPlaceholder":
@@ -767,9 +811,9 @@ const translations: Translations = {
     "cases.modal.title.placeholder": "مثال: قضية تحيّل مالي",
     "cases.modal.type": "نوع القضية",
     "cases.modal.type.placeholder": "اختر نوع القضية",
-    "cases.modal.type.criminel": "جنائية",
-  "cases.modal.type.enquete": "تحقيق",
-  "cases.modal.type.enqueteur_preliminaire": "بحث بداية",
+    "cases.modal.type.CRIMINEL": "جنائية",
+  "cases.modal.type.ENQUETE": "تحقيق",
+  "cases.modal.type.ENQUETEUR_PRELIMINAIRE": "بحث بداية",
     "cases.modal.accused": "اسم المتهم",
     "cases.modal.accused.placeholder": "مثال: أحمد بن صالح",
     "cases.modal.courtDate": "تاريخ الجلسة",

@@ -69,9 +69,7 @@ const handleLogout = async () => {
             <h1 className="text-lg font-bold font-serif">
               {t("sidebar.organizationName")}
             </h1>
-            <p className="text-xs text-muted-foreground">
-              {t("sidebar.tagline")}
-            </p>
+           
           </div>
         </div>
       </div>

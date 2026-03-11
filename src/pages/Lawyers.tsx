@@ -170,67 +170,7 @@ const exportExcel = async () => {
         </div>
 
 
-        {/* Stats Cards */}
-        {!isLoading && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-slate-600 mb-1">
-                    {t("lawyers.stats.total")}
-                  </p>
-                  <p className="text-3xl font-bold text-slate-900">{lawyers.length}</p>
-                  </div>
-                <div className="p-3 bg-blue-50 rounded-xl">
-                  <Users className="w-6 h-6 text-blue-600" />
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-slate-600 mb-1">
-                    {t("lawyers.stats.active")}
-                  </p>
-                 <p className="text-3xl font-bold text-amber-600">4</p>
-               </div>
-                <div className="p-3 bg-blue-50 rounded-xl">
-                  <Briefcase className="w-6 h-6 text-amber-600" />
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-slate-600 mb-1">
-                    {t("lawyers.stats.specialties")}
-                  </p>
-                  <p className="text-3xl font-bold text-indigo-600">2</p>
-               </div>
-                <div className="p-3 bg-blue-50 rounded-xl">
-                  <Scale className="w-6 h-6 text-indigo-600"/>
-                </div>
-              </div>
-            </div>
-
-                <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-slate-600 mb-1">
-                    {t("lawyers.stats.specialties")}
-                  </p>
-                   <p className="text-3xl font-bold text-indigo-600">2</p>
-               </div>
-                <div className="p-3 bg-blue-50 rounded-xl">
-                  <Scale className="w-6 h-6 text-blue-600" />
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
+   
         {/* Main Content Card */}
         <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200 dark:border-gray-800 overflow-hidden">
           {isLoading ? (

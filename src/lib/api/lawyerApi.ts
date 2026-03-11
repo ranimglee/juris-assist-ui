@@ -1,6 +1,6 @@
 // lib/api/lawyerApi.ts
 
-const BASE_URL = "https://lawyers-j1tr.onrender.com/api/lawyers";
+const BASE_URL = "http://localhost:8080/api/lawyers";
 
 export async function getAllLawyers() {
   const res = await fetch(`${BASE_URL}/get-all`);

@@ -105,7 +105,7 @@ const handleSave = async (caseData: {
     total: cases.length,
     pending: cases.filter(c => c.status === "pending").length,
     accepted: cases.filter(c => c.status === "accepted").length,
-    active: cases.filter(c => ACTIVE_STATUSES.includes(c.status)).length,
+    completed: cases.filter(c => c.status === "completed").length,
   };
 
   return (
@@ -194,9 +194,9 @@ const handleSave = async (caseData: {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-slate-600 mb-1">
-                    {t("cases.stats.active")}
+                    {t("cases.stats.completed")}
                   </p>
-                  <p className="text-3xl font-bold text-green-600">{stats.active}</p>
+                  <p className="text-3xl font-bold text-green-600">{stats.completed}</p>
                 </div>
                 <div className="p-3 bg-green-50 rounded-xl">
                   <TrendingUp className="w-6 h-6 text-green-600" />

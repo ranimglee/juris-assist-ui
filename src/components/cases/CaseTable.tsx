@@ -352,8 +352,13 @@ export function CaseTable({
           ) : (
             <TableBody>
               {filteredAndSortedCases.map((caseItem) => {
-                const status = statusConfig[caseItem.status];
-                const StatusIcon = status.icon;
+               const status = statusConfig[caseItem.status as CaseStatus] ?? {
+  labelKey: "cases.status.unknown",
+  variant: "outline",
+  icon: AlertCircle,
+};
+
+const StatusIcon = status.icon;
 
                 return (
                   <TableRow 

@@ -42,14 +42,14 @@ const [selectedLawyerId, setSelectedLawyerId] = useState<string | null>(null);
 
 const [formData, setFormData] = useState<{
   numero: string;
-  titre: string;
+  titre?: string | null;
   type: CaseType;
   sousType?: SousType; 
   nomAccuse: string;
   dateTribunal: string;
 }>({
   numero: "",
-  titre: "",
+  titre: null,
   type: "criminel",
   sousType: undefined, 
   nomAccuse: "",
@@ -91,7 +91,7 @@ useEffect(() => {
   )?.value;
     setFormData({
       numero: caseData.caseNumber || "",
-      titre: caseData.title || "",
+      titre: caseData.title || null,
       type: caseData.type || "criminel",
       sousType: matchedSousType, // undefined if no match
       nomAccuse: caseData.nomAccuse || "",
@@ -100,7 +100,7 @@ useEffect(() => {
   } else {
     setFormData({
       numero: "",
-      titre: "",
+      titre: null,
       type: "criminel",
       sousType: undefined,
       nomAccuse: "",
@@ -112,6 +112,12 @@ useEffect(() => {
   setTouched({});
 }, [caseData, isOpen]);
 
+const CASE_TYPE_LABEL_KEY: Record<CaseType, string> = {
+  criminel: "cases.modal.type.criminel",
+  enquete: "cases.modal.type.enquete",
+  enqueteur_preliminaire: "cases.modal.type.enqueteur_preliminaire",
+};
+
  const sousTypeOptions: Record<
   CaseType,
   { value: SousType; labelKey: string }[]
@@ -122,8 +128,8 @@ useEffect(() => {
       labelKey: "cases.sousType.TRIBUNAL_PREMIERE_INSTANCE_NABEUL",
     },
     {
-      value: "TRIBUNAL_PREMIERE_INSTANCE_KORBA",
-      labelKey: "cases.sousType.TRIBUNAL_PREMIERE_INSTANCE_KORBA",
+      value: "TRIBUNAL_PREMIERE_INSTANCE_GROMBALIA",
+      labelKey: "cases.sousType.TRIBUNAL_PREMIERE_INSTANCE_GROMBALIA",
     },
     {
       value: "COUR_APPEL_NABEUL",
@@ -153,10 +159,9 @@ useEffect(() => {
       case "numero":
         if (!value) return t("cases.modal.error.numberRequired");
         break;
-      case "titre":
-        if (!value) return t("cases.modal.error.titleRequired");
-        if (value.length < 3) return t("cases.modal.error.min3");
-        break;
+       case "titre":
+      if (value && value.length < 3) return t("cases.modal.error.min3");
+      break;
       case "nomAccuse":
         if (!value) return t("cases.modal.error.accusedRequired");
         if (value.length < 2) return t("cases.modal.error.min2");
@@ -213,12 +218,12 @@ const handleSubmit = async (e: React.FormEvent) => {
 
 const payload = {
   ...formData,
-  sousType: formData.type === "enqueteur_preliminaire" ? null : formData.sousType ?? null,
+  titre: formData.titre ?? "", 
+  type: formData.type ,
   dateTribunal: formData.dateTribunal + "T00:00:00",
   assignmentMode,          
   assignedLawyerId: assignmentMode === "MANUAL" ? selectedLawyerId : null,
 };
-
 
 
   try {
@@ -280,20 +285,19 @@ const payload = {
           <div className="space-y-2">
             <Label htmlFor="titre" className="flex items-center gap-2 text-sm font-semibold">
               <FileText className="w-4 h-4" /> {t("cases.modal.title")}{" "}
-              <span className="text-red-500">*</span>
             </Label>
             <Input
               id="titre"
-              value={formData.titre}
-              onChange={(e) => handleChange("titre", e.target.value)}
-              onBlur={() => handleBlur("titre")}
-              placeholder={t("cases.modal.title.placeholder")}
-              className={`h-11 transition-all ${
-                errors.titre && touched.titre
-                  ? "border-red-500 focus:ring-red-500"
-                  : "focus:ring-blue-500"
-              }`}
-            />
+  value={formData.titre ?? ""}
+  onChange={(e) => handleChange("titre", e.target.value)}
+  onBlur={() => handleBlur("titre")}
+  placeholder={t("cases.modal.title.placeholder")}
+  className={`h-11 transition-all ${
+    errors.titre && touched.titre
+      ? "border-red-500 focus:ring-red-500"
+      : "focus:ring-blue-500"
+  }`}
+/>
             {errors.titre && touched.titre && (
               <div className="flex items-center gap-1 text-xs text-red-600">
                 <AlertCircle className="h-3 w-3" /> {errors.titre}
@@ -304,6 +308,8 @@ const payload = {
 <div className={`space-y-2 ${isRTL ? "text-right" : "text-left"}`} dir={isRTL ? "rtl" : "ltr"}>
   <Label className="flex items-center gap-2 text-sm font-semibold">
     <Scale className="w-4 h-4" /> {t("cases.modal.type")}
+   <span className="text-red-500">*</span>
+
   </Label>
   <Select
     value={formData.type}
@@ -319,10 +325,16 @@ const payload = {
       <SelectValue placeholder={t("cases.modal.type.placeholder")} />
     </SelectTrigger>
     <SelectContent dir={isRTL ? "rtl" : "ltr"}>
-      {caseTypes.map((type) => (
-        <SelectItem key={type} value={type} className={isRTL ? "text-right" : "text-left"}>
-          {t(`cases.modal.type.${type}`)}
-        </SelectItem>
+   
+  {caseTypes.map((type) => (
+    <SelectItem
+      key={type}
+      value={type}
+      className={isRTL ? "text-right" : "text-left"}
+    >
+      {t(CASE_TYPE_LABEL_KEY[type])}
+    </SelectItem>
+
       ))}
     </SelectContent>
   </Select>
@@ -404,6 +416,8 @@ const payload = {
 <div className="space-y-2">
   <Label className="flex items-center gap-2 text-sm font-semibold">
     <User className="w-4 h-4" /> {t("cases.modal.assignment")}
+    <span className="text-red-500">*</span>
+
   </Label>
 
   <div className="flex gap-4">

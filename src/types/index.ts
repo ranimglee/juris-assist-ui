@@ -16,7 +16,7 @@ export interface Lawyer {
 
 export type SousType =
   | "TRIBUNAL_PREMIERE_INSTANCE_NABEUL"
-  | "TRIBUNAL_PREMIERE_INSTANCE_KORBA"
+  | "TRIBUNAL_PREMIERE_INSTANCE_GROMBALIA"
   | "COUR_APPEL_NABEUL"
   | "NABEUL"
   | "ZAGHOUAN"
@@ -29,7 +29,7 @@ export type CaseStatus = "pending" | "assigned" | "accepted" | "rejected" | "com
 export type Case = {
   id: number;
   caseNumber: string;
-  title: string;
+  title?: string;
   type: CaseType;
   sousType?:SousType;
   nomAccuse: string; // nomAccuse

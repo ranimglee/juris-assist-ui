@@ -164,7 +164,7 @@ const translations: Translations = {
       "Essayez d'ajuster vos filtres de recherche pour trouver ce que vous cherchez.",
     "lawyers.table.resetFilters": "Réinitialiser les filtres",
     "lawyers.table.columns.name": "Nom & Prénom",
-    "lawyers.table.columns.identifiant": "Identifiant",
+    "lawyers.table.columns.identifiant": "Numéro d'inscription",
 
         "common.thisMonth": "ce mois ",
   "charts.lawyerPerformance.title": "Performance des avocats",
@@ -204,7 +204,7 @@ const translations: Translations = {
     "lawyers.modal.section.contact": "Informations de contact",
     "lawyers.modal.section.location": "Localisation",
     "lawyers.modal.firstName": "Prénom",
-    "lawyers.modal.identifiant": "Identifiant",
+    "lawyers.modal.identifiant": "Numéro d'inscription",
     "lawyers.modal.identifiant.placeholder": "Ex:00000",
     "lawyers.modal.firstName.placeholder": "Ex: Jean",
     "lawyers.modal.lastName": "Nom",
@@ -261,7 +261,7 @@ const translations: Translations = {
       "Essayez d'ajuster vos filtres de recherche pour trouver ce que vous cherchez.",
     "cases.table.resetFilters": "Réinitialiser les filtres",
     "cases.table.columns.number": "N° Affaire",
-    "cases.table.columns.title": "Titre",
+    "cases.table.columns.title": "Accusation",
     "cases.table.columns.type": "Type",
     "cases.table.columns.courtDate": "Audience",
     "cases.table.columns.status": "Statut",
@@ -276,12 +276,15 @@ const translations: Translations = {
     "cases.status.rejected": "Refusée",
     "cases.status.completed": "Terminée",
 
+  "navbar.notifications": "Notifications",
+    "navbar.noNotifications": "Aucune notification",
+  
     // Cases modal
     "cases.modal.title.edit": "Modifier l'affaire",
     "cases.modal.title.create": "Créer une nouvelle affaire",
     "cases.modal.number": "Numéro",
     "cases.modal.number.placeholder": "Ex: AFF-2024-001",
-    "cases.modal.title": "Titre",
+    "cases.modal.title": "Accusation",
     "cases.modal.title.placeholder": "Ex: Affaire de fraude fiscale",
     "cases.modal.type": "Type d'affaire",
     "cases.modal.type.placeholder": "Sélectionnez un type",
@@ -434,13 +437,21 @@ const translations: Translations = {
   "cases.table.columns.sousType":"Sous-type",
   "cases.modal.sousType":"Sous-type ",
   "cases.modal.sousType.placeholder":" Sélectioner un sous-type",
+"navbar.mute": "Couper le son",
 
       "cases.sousType.TRIBUNAL_PREMIERE_INSTANCE_NABEUL": "Tribunal de première instance de Nabeul",
-      "cases.sousType.TRIBUNAL_PREMIERE_INSTANCE_KORBA": "Tribunal de première instance de Korba",
+      "cases.sousType.TRIBUNAL_PREMIERE_INSTANCE_GROMBALIA": "Tribunal de première instance de Grombalia",
       "cases.sousType.COUR_APPEL_NABEUL": "Cour d’appel de Nabeul",
       "cases.sousType.NABEUL": "Nabeul",
       "cases.sousType.ZAGHOUAN": "Zaghouan",
+      "cases.sousType.zaghouan": "Zaghouan",
       "cases.sousType.GROMBALIA": "Grombalia",
+            "cases.sousType.tribunal_premiere_instance_nabeul": "Tribunal de première instance de Nabeul",
+      "cases.sousType.tribunal_premiere_instance_grombalia": "Tribunal de première instance de Grombalia",
+      "cases.sousType.cour_appel_nabeul": "Cour d’appel de Nabeul",
+      "cases.sousType.nabeul": "Nabeul",
+  
+      "cases.sousType.grombalia": "Grombalia",
     
   "pagination.prev": "Précédent",
       
@@ -468,12 +479,19 @@ const translations: Translations = {
   "pagination.pageOf": "الصفحة {{current}} من {{total}}",
 
 
-  "cases.sousType.TRIBUNAL_PREMIERE_INSTANCE_NABEUL": "المحكمة الابتدائية بنابل",
-  "cases.sousType.TRIBUNAL_PREMIERE_INSTANCE_KORBA": "المحكمة الابتدائية بقربة",
+  "cases.sousType.tribunal_premiere_instance_nabeul": "المحكمة الابتدائية بنابل",
+  "cases.sousType.tribunal_premiere_instance_grombalia": "المحكمة الابتدائية بڨرمبالية",
   "cases.sousType.COUR_APPEL_NABEUL": "محكمة الاستئناف بنابل",
+   "cases.sousType.TRIBUNAL_PREMIERE_INSTANCE_NABEUL": "المحكمة الابتدائية بنابل",
+  "cases.sousType.TRIBUNAL_PREMIERE_INSTANCE_GROMBALIA": "المحكمة الابتدائية بڨرمبالية",
+  "cases.sousType.cour_appel_nabeul": "محكمة الاستئناف بنابل",
   "cases.sousType.NABEUL": "نابل",
+  "cases.sousType.nabeul": "نابل",
   "cases.sousType.ZAGHOUAN": "زغوان",
+  "cases.sousType.zaghouan": "زغوان",
+
   "cases.sousType.GROMBALIA": "قرمبالية",
+  "cases.sousType.grombalia": "قرمبالية",
   "pdfModal.title": "الملف القانوني",
   "pdfModal.ref": "وثيقة رسمية - القضية رقم {caseNumber}",
   "pdfModal.caseType": "نوع القضية",
@@ -540,7 +558,7 @@ const translations: Translations = {
       "case.status.completee": "مغلقة",
   
     // Login
-    "login.title": "مسؤول التوزيع",
+    "login.title": "مسؤول التساخير",
     "login.subtitle": "ولوج آمن إلى فضائكم المهني",
     "login.email": "البريد الإلكتروني",
     "login.email.placeholder": "your@email.com",
@@ -613,10 +631,10 @@ const translations: Translations = {
 
     // Sidebar / Layout
     // Sidebar / Layout
-    "sidebar.organizationName":"الهيئة الوطنية للمحامين بنابل",
+    "sidebar.organizationName":"الهيئة الوطنية للمحامين ",
     "sidebar.tagline": "الفرع الجهوي للمحامين بنابل", 
        "sidebar.nav.dashboard": "اللوحة الرئيسة",
-    "sidebar.nav.lawyers": "المحامون",
+    "sidebar.nav.lawyers": "المحامين",
     "sidebar.nav.cases": "القضايا",
     "sidebar.admin": "المشرف",
     "sidebar.admin.email": "admin@onat.tn",
@@ -625,13 +643,16 @@ const translations: Translations = {
     // Dashboard
     "dashboard.title": "لوحة المتابعة",
     "dashboard.subtitle": "نظرة شاملة على تسييركم القانوني",
-    "dashboard.stats.lawyers": "محامون مسجّلون",
+    "dashboard.stats.lawyers": "المحامون المسجّلون",
     "dashboard.stats.casesTotal": "إجمالي القضايا",
     "dashboard.stats.casesActive": "القضايا الجارية",
     "dashboard.stats.casesCompleted": "القضايا المغلقة",
     "dashboard.stats.casesAssigned": "القضايا المسندة",
     "dashboard.stats.pendingCases": "القضايا قيد الانتظار",
-
+"navbar.mute": "كتم الصوت",
+  
+  "navbar.notifications": "الإشعارات",
+    "navbar.noNotifications": "لا توجد إشعارات",
     // Lawyers page
     "lawyers.title": "إدارة المحامين",
     "lawyers.subtitle":
@@ -649,7 +670,7 @@ const translations: Translations = {
       "ابدأ بإضافة أول محامٍ لتسيير فريقك القانوني",
     "lawyers.empty.button": "إضافة أول محامٍ",
     "lawyers.list.title": "قائمة المحامين",
-    "lawyers.list.count": "{count} محامٍ (محامون) في المجموع",
+    "lawyers.list.count": "{count} محامٍ  في المجموع",
     "lawyers.toast.loadError":
       "خطأ أثناء تحميل قائمة المحامين",
     "lawyers.toast.saveError":
@@ -688,11 +709,11 @@ const translations: Translations = {
     "lawyers.table.columns.name": "الاسم واللقب",
     "lawyers.table.columns.contact": "معلومات الاتصال",
     "lawyers.table.columns.region": "الجهة",
-    "lawyers.table.columns.registration": "تاريخ التسجيل",
+    "lawyers.table.columns.registration": "تاريخ الترسيم",
     "lawyers.table.columns.cases": "القضايا",
     "lawyers.table.columns.performance": "الأداء",
     "lawyers.table.columns.actions": "إجراءات",
-    "lawyers.table.columns.identifiant": "المعرف",
+    "lawyers.table.columns.identifiant": "عدد الترسيم",
 
     // Lawyers modal
     "lawyers.modal.title.edit": "تعديل بيانات المحامي",
@@ -706,7 +727,7 @@ const translations: Translations = {
     "lawyers.modal.section.location": "بيانات العنوان",
     "lawyers.modal.firstName": "الاسم",
     "lawyers.modal.firstName.placeholder": "مثال: أحمد",
-    "lawyers.modal.identifiant": "المعرف",
+    "lawyers.modal.identifiant": "عدد الترسيم",
 "lawyers.modal.identifiant.placeholder": "مثال: 00000",
 "cases.modal.saving": "جارٍ حفظ البيانات...",
 
@@ -721,7 +742,7 @@ const translations: Translations = {
     "lawyers.modal.address": "العنوان الكامل",
     "lawyers.modal.address.placeholder":
       "مثال: 123 شارع الحبيب بورقيبة، تونس",
-    "lawyers.modal.registrationDate": "تاريخ التسجيل",
+    "lawyers.modal.registrationDate": "تاريخ الترسيم",
     "lawyers.modal.registrationDate.help":
       "تاريخ انضمام المحامي إلى الهيكل",
     "lawyers.modal.cancel": "إلغاء",
@@ -733,13 +754,13 @@ const translations: Translations = {
     // Cases page
     "cases.title": "إدارة القضايا",
     "cases.subtitle":
-      "أنشئ وتابع القضايا القضائية بسهولة",
+      "أنشئ وتابع القضايا بسهولة",
     "cases.new": "قضية جديدة",
     "cases.stats.total": "إجمالي القضايا",
     "cases.stats.pending": "في الانتظار",
     "cases.stats.assigned": "مقبولة",
 "cases.stats.completed": "منتهية",
-    "cases.list.title": "قائمة التساخير القانونية",
+    "cases.list.title": "قائمة التساخير ",
     "cases.list.count": "{count} تسخير في المجموع",
     "cases.toast.loadError": "خطأ أثناء تحميل القضايا",
     "cases.toast.deleteSuccess": "تم حذف القضية",
@@ -774,7 +795,7 @@ const translations: Translations = {
 
     // Cases table
     "cases.table.searchPlaceholder":
-      "البحث حسب رقم القضية، العنوان، النوع أو المحامي...",
+      "البحث حسب عدد القضية، التهمة، النوع أو المحامي...",
     "cases.table.status.all": "جميع الحالات",
     "cases.table.loading": "جاري التحميل...",
     "cases.table.results": "{count} نتيجة",
@@ -786,8 +807,8 @@ const translations: Translations = {
     "cases.table.emptyFiltered.subtitle":
       "حاول تعديل معايير البحث للحصول على نتائج.",
     "cases.table.resetFilters": "إعادة تعيين التصفية",
-    "cases.table.columns.number": "رقم القضية",
-    "cases.table.columns.title": "العنوان",
+    "cases.table.columns.number": "عدد القضية",
+    "cases.table.columns.title": "التهمة",
     "cases.table.columns.type": "النوع",
     "cases.table.columns.courtDate": "تاريخ الجلسة",
     "cases.table.columns.status": "الحالة",
@@ -805,15 +826,15 @@ const translations: Translations = {
     // Cases modal
     "cases.modal.title.edit": "تعديل القضية",
     "cases.modal.title.create": "إنشاء قضية جديدة",
-    "cases.modal.number": "رقم القضية",
-    "cases.modal.number.placeholder": "مثال: AFF-2024-001",
-    "cases.modal.title": "عنوان القضية",
+    "cases.modal.number": "عدد القضية",
+    "cases.modal.number.placeholder": "مثال: 1111",
+    "cases.modal.title": "التهمة",
     "cases.modal.title.placeholder": "مثال: قضية تحيّل مالي",
     "cases.modal.type": "نوع القضية",
     "cases.modal.type.placeholder": "اختر نوع القضية",
-    "cases.modal.type.CRIMINEL": "جنائية",
-  "cases.modal.type.ENQUETE": "تحقيق",
-  "cases.modal.type.ENQUETEUR_PRELIMINAIRE": "بحث بداية",
+    "cases.modal.type.criminel": "جنائية",
+  "cases.modal.type.enquete": "تحقيق",
+  "cases.modal.type.enqueteur_preliminaire": "بحث بداية",
     "cases.modal.accused": "اسم المتهم",
     "cases.modal.accused.placeholder": "مثال: أحمد بن صالح",
     "cases.modal.courtDate": "تاريخ الجلسة",

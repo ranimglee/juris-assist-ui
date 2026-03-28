@@ -15,7 +15,19 @@ const request = async <T>(url: string, options?: RequestInit): Promise<T> => {
     throw new Error(text || "API Error");
   }
 
-  return res.json();
+  // ✅ HANDLE EMPTY RESPONSE (VERY IMPORTANT)
+  if (res.status === 204) {
+    return null as T;
+  }
+
+  const text = await res.text();
+
+  // ✅ If empty body → avoid crash
+  if (!text) {
+    return null as T;
+  }
+
+  return JSON.parse(text);
 };
 
 export const CaseService = {

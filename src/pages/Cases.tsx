@@ -15,6 +15,7 @@ const ACTIVE_STATUSES: CaseStatus[] = ["pending", "assigned", "accepted"];
 
 export default function Cases() {
   const [cases, setCases] = useState<Case[]>([]);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCase, setEditingCase] = useState<Case | undefined>();
   const { t } = useLanguage();
@@ -40,6 +41,8 @@ useEffect(() => {
 
 const handleDelete = async (caseId: number) => {
   try {
+    setDeletingId(caseId);
+
     await CaseService.remove(caseId);
 
     setCases((prev) => prev.filter((c) => c.id !== caseId));
@@ -47,10 +50,10 @@ const handleDelete = async (caseId: number) => {
     toast.success(t("cases.toast.deleteSuccess"));
   } catch (error: any) {
     toast.error(error.message || t("cases.toast.deleteError"));
-    console.error(error);
+  } finally {
+    setDeletingId(null);
   }
 };
-
 
 const handleSave = async (caseData: {
   numero: string;

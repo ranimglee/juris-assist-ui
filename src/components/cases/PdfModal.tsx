@@ -22,7 +22,7 @@ import { CaseStatus } from "@/types";
 
 interface CaseItem {
   caseNumber: string;
-  title: string;
+  title?: string;
   type: string;
   nomAccuse?: string;
   assignedLawyerName?: string;
@@ -106,9 +106,6 @@ interface PdfModalProps {
 
 export default function PdfModal({ isOpen, onClose, caseItem }: PdfModalProps) {
   const pdfRef = useRef<HTMLDivElement>(null);
-  const [signature, setSignature] = useState<string | null>(null);
-
-
 
 const handleDownload = async () => {
   if (!pdfRef.current) return;

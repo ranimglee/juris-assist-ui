@@ -85,7 +85,7 @@ const totalPages = Math.ceil(lawyers.length / itemsPerPage);
   };
 const exportPdf = async () => {
   try {
-    const res = await fetch("https://lawyers-j1tr.onrender.com/api/lawyers/export/pdf/design");
+    const res = await fetch("http://localhost:8080/api/lawyers/export/pdf/design");
     const blob = await res.blob();
     const url = window.URL.createObjectURL(blob);
 
@@ -102,7 +102,7 @@ const exportPdf = async () => {
 
 const exportExcel = async () => {
   try {
-    const res = await fetch("https://lawyers-j1tr.onrender.com/api/lawyers/export/excel");
+    const res = await fetch("http://localhost:8080/api/lawyers/export/excel");
     const blob = await res.blob();
     const url = window.URL.createObjectURL(blob);
 

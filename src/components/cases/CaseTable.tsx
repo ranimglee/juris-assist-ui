@@ -375,14 +375,17 @@ const StatusIcon = status.icon;
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline" className="font-medium bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 text-blue-700">
-                        {caseItem.type.charAt(0).toUpperCase() + caseItem.type.slice(1)}
-                      </Badge>
-                    </TableCell>
+  <Badge
+    variant="outline"
+    className="font-medium bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 text-blue-700"
+  >
+    {t(`cases.modal.type.${caseItem.type}`)}
+  </Badge>
+</TableCell>
                     <TableCell>
-                       {caseItem.sousType
-                        ? caseItem.sousType.replace(/_/g, " ")
-                        : "-"}
+                     {caseItem.sousType
+  ? t(`cases.sousType.${caseItem.sousType}`)
+  : "-"}
                     </TableCell>
 
                     <TableCell className="text-muted-foreground font-medium">

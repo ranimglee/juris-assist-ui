@@ -11,7 +11,7 @@ import { CaseService } from "@/services/case.service";
 import { SaveCaseDTO } from "@/services/case.types";
 
 import { CASE_TYPE_TO_BACKEND, toBackendSousType } from "@/services/case.mapper";
-const ACTIVE_STATUSES: CaseStatus[] = ["pending", "assigned", "accepted"];
+const ACTIVE_STATUSES: CaseStatus[] = ["en_attente", "en_cours", "acceptee"];
 
 export default function Cases() {
   const [cases, setCases] = useState<Case[]>([]);
@@ -106,28 +106,28 @@ const handleSave = async (caseData: {
   // Calculate statistics
   const stats = {
     total: cases.length,
-    pending: cases.filter(c => c.status === "pending").length,
-    accepted: cases.filter(c => c.status === "accepted").length,
-    completed: cases.filter(c => c.status === "completed").length,
+    en_attente: cases.filter(c => c.status === "en_attente").length,
+    acceptee: cases.filter(c => c.status === "acceptee").length,
+    cloturee: cases.filter(c => c.status === "cloturee").length,
   };
 
   return (
     <Layout>
         <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200 dark:border-gray-800 overflow-hidden">
-        <div className="max-w-7xl mx-auto p-6 sm:p-8 space-y-8">
+        <div className="mx-auto max-w-7xl space-y-6 p-4 sm:space-y-8 sm:p-6 md:p-8">
 
         {/* Header Section */}
-        <div className="flex items-center justify-between">
-          <div className="space-y-1">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0 space-y-1">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-gradient-to-br gradient-accent to-indigo-600 rounded-lg">
-                <Scale className="h-6 w-6 text-white" />
+              <div className="shrink-0 rounded-lg bg-gradient-to-br gradient-accent to-indigo-600 p-2">
+                <Scale className="h-5 w-5 text-white sm:h-6 sm:w-6" />
               </div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-gray-100 dark:to-gray-400 bg-clip-text text-transparent">
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent dark:from-gray-100 dark:to-gray-400 sm:text-3xl">
                 {t("cases.title")}
               </h1>
             </div>
-            <p className="text-sm text-muted-foreground pl-14">
+            <p className="text-sm text-muted-foreground sm:pl-14">
               {t("cases.subtitle")}
             </p>
           </div>
@@ -137,9 +137,9 @@ const handleSave = async (caseData: {
               setEditingCase(undefined);
               setIsModalOpen(true);
             }}
-            className="gradient-accent"
+            className="gradient-accent w-full shrink-0 sm:w-auto"
           >
-            <Plus className="h-5 w-5 mr-2" />
+            <Plus className="mr-2 h-5 w-5" />
             {t("cases.new")}
           </Button>
 
@@ -169,9 +169,9 @@ const handleSave = async (caseData: {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-slate-600 mb-1">
-                    {t("cases.stats.pending")}
+                    {t("cases.stats.en_attente")}
                   </p>
-                  <p className="text-3xl font-bold text-amber-600">{stats.pending}</p>
+                  <p className="text-3xl font-bold text-amber-600">{stats.en_attente}</p>
                 </div>
                 <div className="p-3 bg-amber-50 rounded-xl">
                   <FileText className="w-6 h-6 text-amber-600" />
@@ -183,9 +183,9 @@ const handleSave = async (caseData: {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-slate-600 mb-1">
-                    {t("cases.stats.assigned")}
+                    {t("cases.stats.acceptee")}
                   </p>
-                  <p className="text-3xl font-bold text-indigo-600">{stats.accepted}</p>
+                  <p className="text-3xl font-bold text-indigo-600">{stats.acceptee}</p>
                 </div>
                 <div className="p-3 bg-indigo-50 rounded-xl">
                   <Scale className="w-6 h-6 text-indigo-600" />
@@ -197,9 +197,9 @@ const handleSave = async (caseData: {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-slate-600 mb-1">
-                    {t("cases.stats.completed")}
+                    {t("cases.stats.cloturee")}
                   </p>
-                  <p className="text-3xl font-bold text-green-600">{stats.completed}</p>
+                  <p className="text-3xl font-bold text-green-600">{stats.cloturee}</p>
                 </div>
                 <div className="p-3 bg-green-50 rounded-xl">
                   <TrendingUp className="w-6 h-6 text-green-600" />
@@ -240,7 +240,7 @@ const handleSave = async (caseData: {
 
                  {/* Pagination */}
 {cases.length > itemsPerPage && (
-  <div className="flex justify-end items-center mt-4 gap-3">
+  <div className="mt-4 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-end">
     <Button
       onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
       disabled={currentPage === 1}

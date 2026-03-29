@@ -289,7 +289,8 @@ export function LawyerTable({ lawyers, onEdit, onDelete, isLoading = false }: La
                      <div className="space-y-1">
                        <div className="flex items-center gap-2"> 
                         <div className="px-2.5 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs font-semibold"> 
-                        {lawyer.affairesEnCours} en cours </div> 
+                        {lawyer.affairesEnCours} {t("lawyers.table.inProgress")}
+                         </div> 
                         </div>
                          <div className="flex gap-2 text-xs">
                            <span className="text-emerald-600 dark:text-emerald-400 font-medium"> ✓ {lawyer.affairesAcceptees} </span>

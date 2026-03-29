@@ -43,8 +43,8 @@ export default function Dashboard() {
 
   return (
     <Layout>
-      <div className="p-8 space-y-8">
-        <h1 className="text-4xl font-bold text-foreground">
+      <div className="space-y-6 p-4 sm:space-y-8 sm:p-6 md:p-8">
+        <h1 className="text-2xl font-bold text-foreground sm:text-3xl md:text-4xl">
           {t("dashboard.title")}
         </h1>
 

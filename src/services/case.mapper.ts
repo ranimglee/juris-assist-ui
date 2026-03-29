@@ -2,11 +2,11 @@ import { Case, CaseStatus, CaseType, SousType } from "@/types";
 import { BackendCase, BackendCaseStatus } from "./case.types";
 
 const STATUS_MAP: Record<BackendCaseStatus, CaseStatus> = {
-  EN_ATTENTE: "pending",
-  ASSIGNEE: "assigned",
-  ACCEPTEE: "accepted",
-  REFUSEE: "rejected",
-  TERMINEE: "completed",
+  EN_ATTENTE: "en_attente",
+  EN_COURS: "en_cours",
+  ACCEPTEE: "acceptee",
+  REFUSEE: "refusee",
+  CLOTUREE: "cloturee",
 };
 
 export const mapBackendCaseToCase = (a: BackendCase): Case => ({

@@ -35,7 +35,7 @@ const translations: Translations = {
     "login.remember": "Se souvenir",
     "login.forgot": "Mot de passe oublié ?",
     "login.submit": "Se connecter",
-    "login.footer": "© 2025 Ordre National Des Avocats De Tunisie. Tous droits réservés.",
+    "login.footer": "© 2026 Ordre National Des Avocats De Tunisie. Tous droits réservés.",
     "login.ssl": "Connexion sécurisée SSL",
     "login.fillAll": "Veuillez remplir tous les champs",
     "login.invalid": "Identifiants incorrects",
@@ -78,6 +78,28 @@ const translations: Translations = {
     "home.contact.email": "Email",
     "home.contact.address": "Adresse",
 
+  "pdf.title": "Dossier Juridique",
+  "pdf.subtitle": "Document officiel - Affaire N° {{caseNumber}}",
+  "pdf.caseType": "Type d'affaire",
+  "pdf.creationDate": "Date de création",
+  "pdf.courtDate": "Date d'audience",
+  "pdf.currentStatus": "Statut actuel",
+  "pdf.accusedName": "Nom de l'accusé",
+  "pdf.lawyer": "Avocat assigné",
+  "pdf.description": "Description de l'affaire",
+  "pdf.notProvided": "Non renseigné",
+  "pdf.noLawyer": "Aucun avocat assigné",
+  "pdf.notScheduled": "Non planifiée",
+  "pdf.generatedText": "Ce document est généré automatiquement...",
+  "pdf.generatedOn": "Généré le {{date}}",
+  "pdf.download": "Télécharger PDF",
+
+  "status.en_attente": "En attente",
+  "status.en_cours": "En cours",
+  "status.acceptee": "Acceptée",
+  "status.refusee": "Refusée",
+  "status.cloturee": "Clôturée",
+
     "home.footer.about":
       "Ordre National des Avocats de Tunisie - Au service de la justice depuis toujours",
     "home.footer.links": "Liens Utiles",
@@ -90,7 +112,7 @@ const translations: Translations = {
     "home.footer.privacy": "Politique de confidentialité",
     "home.footer.mentions": "Mentions légales",
     "home.footer.copyright":
-      "© 2025 Ordre National Des Avocats De Tunisie. Tous droits réservés.",
+      "© 2026 Ordre National Des Avocats De Tunisie. Tous droits réservés.",
 
     // Sidebar / Layout
     "sidebar.organizationName":"Ordre National Des avocats de Nabeul",
@@ -150,7 +172,8 @@ const translations: Translations = {
 "cases.modal.assignment.manual": "Manuelle",
 "cases.modal.selectLawyer": "Sélectionner un avocat",  
 "cases.modal.selectLawyerPlaceholder": "Choisissez un avocat...", 
-    
+      "lawyers.table.inProgress": "en cours",
+
   
     // Lawyers table
     "lawyers.table.searchPlaceholder":
@@ -179,11 +202,11 @@ const translations: Translations = {
     "lawyers.table.columns.actions": "Actions",
      "charts.caseStatus.title": "Répartition des affaires",
      
-  "case.status.pending": "En attente",
-  "case.status.assigned": "Assignées",
-  "case.status.accepted": "Acceptées",
-  "case.status.completed": "Terminées",
-  "case.status.rejected": "Rejetées",
+  "case.status.en_attente": "En attente",
+  "case.status.en_cours": "en_cours",
+  "case.status.acceptee": "Acceptées",
+  "case.status.cloturee": "Terminées",
+  "case.status.refusee": "Refusée",
 
   "charts.casesByType.title": "Répartition par type d'affaire",
   "charts.casesByRegion.title": "Affaires par région",
@@ -226,16 +249,19 @@ const translations: Translations = {
     "lawyers.modal.error.email": "Email invalide",
     "lawyers.modal.error.phone": "Numéro de téléphone invalide",
     "lawyers.modal.error.minChars": "Minimum 2 caractères",
-
+"cases.modal.searchLawyer": "Rechercher un avocat...",
+"cases.modal.noLawyerFound": "Aucun avocat trouvé",
+"cases.modal.error.lawyerRequired": "Veuillez sélectionner un avocat",
+"cases.modal.assignmentLocked": "Impossible de changer l'avocat assigné sauf si le statut est en attente",
     // Cases page
     "cases.title": "Gestion des affaires",
     "cases.subtitle":
       "Créez et gérez les affaires judiciaires en toute simplicité",
     "cases.new": "Nouvelle affaire",
     "cases.stats.total": "Total des affaires",
-    "cases.stats.pending": "En attente",
-    "cases.stats.assigned": "Acceptées",
-    "cases.stats.completed": "Terminées",
+    "cases.stats.en_attente": "En attente",
+    "cases.stats.acceptee": "Acceptées",
+    "cases.stats.cloturee": "Terminées",
     "cases.list.title": "Liste des affaires",
     "cases.list.count": "{count} affaire{suffix} au total",
     "cases.toast.loadError": "Erreur de chargement des affaires",
@@ -270,11 +296,11 @@ const translations: Translations = {
     "cases.table.unassigned": "Non assigné",
 
     // Cases status labels
-    "cases.status.pending": "En attente",
-    "cases.status.assigned": "Assignée",
-    "cases.status.accepted": "Acceptée",
-    "cases.status.rejected": "Refusée",
-    "cases.status.completed": "Terminée",
+    "cases.status.en_attente": "En attente",
+    "cases.status.en_cours": "En cours",
+    "cases.status.acceptee": "Acceptée",
+    "cases.status.refusee": "Refusée",
+    "cases.status.cloturee": "Cloturée",
 
   "navbar.notifications": "Notifications",
     "navbar.noNotifications": "Aucune notification",
@@ -317,7 +343,7 @@ const translations: Translations = {
     "forgot.submit": "Envoyer le lien",
     "forgot.backToLogin": "Retour à la page de connexion",
     "forgot.footer":
-      "© 2025 Ordre National Des Avocats De Tunisie. Tous droits réservés.",
+      "© 2026 Ordre National Des Avocats De Tunisie. Tous droits réservés.",
     "forgot.error.empty": "Veuillez entrer votre email",
     "forgot.error.request": "Erreur lors de l'envoi de la demande",
     "forgot.success": "Un email de réinitialisation a été envoyé !",
@@ -384,7 +410,7 @@ const translations: Translations = {
   "reset.confirmPasswordPlaceholder": "Confirmez votre mot de passe",
   "reset.submit": "Réinitialiser le mot de passe",
   "reset.backToLogin": "Retour à la connexion",
-  "reset.footer": "© 2025 Ordre National Des Avocats De Tunisie. Tous droits réservés.",
+  "reset.footer": "© 2026 Ordre National Des Avocats De Tunisie. Tous droits réservés.",
 
   "reset.successTitle": "Succès",
   "reset.success": "Votre mot de passe a été réinitialisé avec succès.",
@@ -461,11 +487,7 @@ const translations: Translations = {
   "cases.types.CRIMINEL": "Criminel",
   "cases.types.ENQUETE": "Enquête",
   "cases.types.ENQUETEUR_PRELIMINAIRE": "Enquête préliminaire",
-    "case.status.en_attente": "En attente",
-  "case.status.acceptee": "Acceptée",
-  "case.status.rejetee": "Rejetée",
-  "case.status.assignee": "Assignée",
-  "case.status.completee": "Terminée"
+
   },
   ar: {
     "lang.fr": "Français",
@@ -500,7 +522,7 @@ const translations: Translations = {
   "pdfModal.status": "الحالة الحالية",
   "pdfModal.accusedName": "اسم المتهم",
   "pdfModal.assignedLawyer": "المحامي المعين",
-  "pdfModal.description": "وصف القضية",
+  "pdfModal.description": " التهمة",
   "pdfModal.signature": "التوقيع الرقمي",
   "pdfModal.signatureText": "وقع أدناه للتحقق من صحة هذه الوثيقة",
   "pdfModal.signatureSaved": "تم حفظ التوقيع",
@@ -509,6 +531,13 @@ const translations: Translations = {
   "pdfModal.download": "تحميل PDF",
   "pdfModal.ready": "الوثيقة جاهزة للتحميل",
   "pdfModal.notPlanned": "غير محددة",
+
+  "status.en_attente": "في الانتظار",
+  "status.en_cours": "قيد المعالجة",
+  "status.acceptee": "مقبولة",
+  "status.refusee": "مرفوضة",
+  "status.cloturee": "مغلقة",
+
     "deleteCaseModal.title": "تأكيد الحذف",
   "deleteCaseModal.message": "هل تريد حقًا حذف القضية {caseNumber}؟",
   "deleteCaseModal.cancel": "إلغاء",
@@ -551,7 +580,7 @@ const translations: Translations = {
     "navbar.changePassword": "تغيير كلمة المرور",
     "navbar.logout": "تسجيل الخروج",
     "navbar.logout.success": "تم تسجيل الخروج بنجاح",
-    "case.status.en_attente": "قيد الانتظار",
+    "case.status.en_attente": "في الانتظار",
       "case.status.acceptee": "مقبولة",
       "case.status.rejetee": "مرفوضة",
       "case.status.assignee": "مخصصة",
@@ -567,7 +596,7 @@ const translations: Translations = {
     "login.remember": "تذكّرني",
     "login.forgot": "هل نسيت كلمة المرور؟",
     "login.submit": "تسجيل الدخول",
-    "login.footer": "© 2025 الهيئة الوطنية للمحامين بتونس. كل الحقوق محفوظة.",
+    "login.footer": "© 2026 الهيئة الوطنية للمحامين بتونس. كل الحقوق محفوظة.",
     "login.ssl": "اتصال آمن SSL",
     "login.fillAll": "الرجاء ملء جميع الحقول",
     "login.invalid": "معطيات الدخول غير صحيحة",
@@ -627,7 +656,7 @@ const translations: Translations = {
     "home.footer.privacy": "سياسة الخصوصية",
     "home.footer.mentions": "البيانات القانونية",
     "home.footer.copyright":
-      "© 2025 الهيئة الوطنية للمحامين بتونس. كل الحقوق محفوظة.",
+      "© 2026 الهيئة الوطنية للمحامين بتونس. كل الحقوق محفوظة.",
 
     // Sidebar / Layout
     // Sidebar / Layout
@@ -648,7 +677,7 @@ const translations: Translations = {
     "dashboard.stats.casesActive": "القضايا الجارية",
     "dashboard.stats.casesCompleted": "القضايا المغلقة",
     "dashboard.stats.casesAssigned": "القضايا المسندة",
-    "dashboard.stats.pendingCases": "القضايا قيد الانتظار",
+    "dashboard.stats.pendingCases": "القضايا في الانتظار",
 "navbar.mute": "كتم الصوت",
   
   "navbar.notifications": "الإشعارات",
@@ -696,6 +725,8 @@ const translations: Translations = {
   "charts.lawyerPerformance.legend.completed": "منتهية",
   "charts.lawyerPerformance.legend.active": "قيد المعالجة",
     // Lawyers table
+      "lawyers.table.inProgress": " قضايا جارية",
+
     "lawyers.table.searchPlaceholder":
       "البحث حسب الاسم أو البريد أو الجهة...",
     "lawyers.table.results": "{count} نتيجة",
@@ -757,9 +788,9 @@ const translations: Translations = {
       "أنشئ وتابع القضايا بسهولة",
     "cases.new": "قضية جديدة",
     "cases.stats.total": "إجمالي القضايا",
-    "cases.stats.pending": "في الانتظار",
-    "cases.stats.assigned": "مقبولة",
-"cases.stats.completed": "منتهية",
+    "cases.stats.en_attente": "في الانتظار",
+    "cases.stats.acceptee": "مقبولة",
+"cases.stats.cloturee": "منتهية",
     "cases.list.title": "قائمة التساخير ",
     "cases.list.count": "{count} تسخير في المجموع",
     "cases.toast.loadError": "خطأ أثناء تحميل القضايا",
@@ -780,11 +811,7 @@ const translations: Translations = {
       
 
         "charts.caseStatus.title": "توزيع القضايا",
-  "case.status.pending": "قيد الانتظار",
-  "case.status.assigned": "مُسندة",
-  "case.status.accepted": "مقبولة",
-  "case.status.completed": "منتهية",
-  "case.status.rejected": "مرفوضة",
+
 
   "charts.casesByRegion.title": "القضايا حسب الجهة",
   "charts.casesByRegion.legend.cases": "القضايا",
@@ -817,11 +844,11 @@ const translations: Translations = {
     "cases.table.unassigned": "غير مكلّفة",
 
     // Cases status labels
-    "cases.status.pending": "في الانتظار",
-    "cases.status.assigned": "مكلّفة",
-    "cases.status.accepted": "مقبولة",
-    "cases.status.rejected": "مرفوضة",
-    "cases.status.completed": "منتهية",
+    "cases.status.en_attente": "في الانتظار",
+    "cases.status.en_cours": "مكلّفة",
+    "cases.status.acceptee": "مقبولة",
+    "cases.status.refusee": "مرفوضة",
+    "cases.status.cloturee": "منتهية",
 
     // Cases modal
     "cases.modal.title.edit": "تعديل القضية",
@@ -834,7 +861,7 @@ const translations: Translations = {
     "cases.modal.type.placeholder": "اختر نوع القضية",
     "cases.modal.type.criminel": "جنائية",
   "cases.modal.type.enquete": "تحقيق",
-  "cases.modal.type.enqueteur_preliminaire": "بحث بداية",
+  "cases.modal.type.enqueteur_preliminaire": "باحث بداية",
     "cases.modal.accused": "اسم المتهم",
     "cases.modal.accused.placeholder": "مثال: أحمد بن صالح",
     "cases.modal.courtDate": "تاريخ الجلسة",
@@ -848,6 +875,28 @@ const translations: Translations = {
     "cases.modal.error.courtDateRequired":
       "تاريخ الجلسة إجباري",
 
+  "pdf.title": "الملف القضائي",
+  "pdf.subtitle": "وثيقة رسمية - القضية رقم {{caseNumber}}",
+  "pdf.caseType": "نوع القضية",
+  "pdf.creationDate": "تاريخ الإنشاء",
+  "pdf.courtDate": "تاريخ الجلسة",
+  "pdf.currentStatus": "الحالة الحالية",
+  "pdf.accusedName": "اسم المتهم",
+  "pdf.lawyer": "المحامي المعيّن",
+  "pdf.description": " التهمة",
+  "pdf.notProvided": "غير متوفر",
+  "pdf.noLawyer": "لا يوجد محامٍ",
+  "pdf.notScheduled": "غير مبرمجة",
+  "pdf.generatedText": "تم إنشاء هذا المستند تلقائيًا...",
+  "pdf.generatedOn": "تم الإنشاء في {{date}}",
+  "pdf.download": "تحميل PDF",
+
+  "status.EN_ATTENTE": "في الانتظار",
+  "status.EN_COURS": "قيد المعالجة",
+  "status.ACCEPTEE": "مقبولة",
+  "status.REFUSEE": "مرفوضة",
+  "status.CLOTUREE": "مغلقة",
+
     // Forgot password
     "forgot.title": "إعادة تعيين كلمة المرور",
     "forgot.subtitle":
@@ -857,7 +906,7 @@ const translations: Translations = {
     "forgot.submit": "إرسال الرابط",
     "forgot.backToLogin": "الرجوع إلى تسجيل الدخول",
     "forgot.footer":
-      "© 2025 الهيئة الوطنية للمحامين بتونس. كل الحقوق محفوظة.",
+      "© 2026 الهيئة الوطنية للمحامين بتونس. كل الحقوق محفوظة.",
     "forgot.error.empty": "الرجاء إدخال بريدك الإلكتروني",
     "forgot.error.request":
       "خطأ أثناء إرسال الطلب",
@@ -932,7 +981,7 @@ const translations: Translations = {
   "reset.confirmPasswordPlaceholder": "أعد إدخال كلمة المرور",
   "reset.submit": "إعادة تعيين كلمة المرور",
   "reset.backToLogin": "العودة إلى تسجيل الدخول",
-  "reset.footer": "© 2025 الهيئة الوطنية للمحامين بتونس. كل الحقوق محفوظة.",
+  "reset.footer": "© 2026 الهيئة الوطنية للمحامين بتونس. كل الحقوق محفوظة.",
 
   "reset.successTitle": "تم بنجاح",
   "reset.success": "تمت إعادة تعيين كلمة المرور بنجاح.",
@@ -941,7 +990,11 @@ const translations: Translations = {
   "reset.error.empty": "يرجى ملء جميع الحقول.",
   "reset.error.mismatch": "كلمتا المرور غير متطابقتين.",
   "reset.error.request": "تعذر إعادة تعيين كلمة المرور.",
-  "reset.error.unknown": "حدث خطأ غير معروف."
+  "reset.error.unknown": "حدث خطأ غير معروف.",
+  "cases.modal.searchLawyer" : "ابحث عن محامي...",
+"cases.modal.noLawyerFound" :"لم يتم العثور على محامي" ,
+"cases.modal.error.lawyerRequired" :" الرجاء اختيار محامي",
+"cases.modal.assignmentLocked":" لا يمكن تغيير المحامي المعين إلا إذا كانت الحالة قيد الانتظار",
   },
 };
 

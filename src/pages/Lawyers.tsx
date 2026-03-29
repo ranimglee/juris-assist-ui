@@ -119,39 +119,36 @@ const exportExcel = async () => {
 
   return (
     <Layout>
-      <div className="p-8 space-y-8">
+      <div className="space-y-6 p-4 sm:space-y-8 sm:p-6 md:p-8">
         {/* Header Section */}
-        <div className="flex items-center justify-between">
-          <div className="space-y-1">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div className="min-w-0 space-y-1">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-gradient-to-br gradient-accent to-indigo-600 rounded-lg">
-                <Scale className="h-6 w-6 text-white" />
+              <div className="shrink-0 rounded-lg bg-gradient-to-br gradient-accent to-indigo-600 p-2">
+                <Scale className="h-5 w-5 text-white sm:h-6 sm:w-6" />
               </div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-gray-100 dark:to-gray-400 bg-clip-text text-transparent">
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent dark:from-gray-100 dark:to-gray-400 sm:text-3xl">
                 {t("lawyers.title")}
               </h1>
             </div>
-            <p className="text-sm text-muted-foreground pl-14">
+            <p className="text-sm text-muted-foreground sm:pl-14">
               {t("lawyers.subtitle")}
             </p>
           </div>
-        <div className="flex gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
           <Button
             onClick={handleAdd}
             size="lg"
-            className="gradient-accent flex items-center justify-center gap-2"
+            className="gradient-accent flex w-full items-center justify-center gap-2 sm:w-auto"
           >
             <Plus className="h-5 w-5" />
             {t("lawyers.add")}
           </Button>
-
-
-          
             <Button
               onClick={exportPdf}
               variant="outline"
               size="lg"
-              className="gap-2"
+              className="w-full gap-2 sm:w-auto"
             >
               <Scale className="h-5 w-5" />
               {t("lawyers.exportPdf")}
@@ -160,12 +157,11 @@ const exportExcel = async () => {
               onClick={exportExcel}
               variant="outline"
               size="lg"
-              className="gap-2"
+              className="w-full gap-2 sm:w-auto"
             >
               <Briefcase className="h-5 w-5" />
               {t("lawyers.exportExcel")}
             </Button>
-          
           </div>
         </div>
 
@@ -243,7 +239,7 @@ const exportExcel = async () => {
 
             {/* Pagination */}
 {lawyers.length > itemsPerPage && (
-  <div className="flex justify-end items-center mt-4 gap-3">
+  <div className="mt-4 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-end">
     <Button
       onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
       disabled={currentPage === 1}

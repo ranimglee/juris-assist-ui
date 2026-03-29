@@ -1,4 +1,4 @@
-import { Bell, User, LogOut, KeyRound } from "lucide-react";
+import { Bell, User, LogOut, KeyRound, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -21,7 +21,12 @@ interface Notification {
   seen: boolean;
 }
 
-export function Navbar() {
+type NavbarProps = {
+  showMobileMenu?: boolean;
+  onMobileMenuClick?: () => void;
+};
+
+export function Navbar({ showMobileMenu, onMobileMenuClick }: NavbarProps) {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { lang, setLang, t } = useLanguage();
@@ -118,8 +123,23 @@ export function Navbar() {
   };
 
   return (
-    <header className="h-16 border-b border-border bg-background flex items-center justify-end px-6 gap-4">
+    <header className="flex h-14 shrink-0 items-center gap-2 border-b border-border bg-background px-3 py-2 sm:h-16 sm:px-6 sm:gap-4">
+      <div className="flex min-w-0 flex-1 items-center">
+        {showMobileMenu && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="shrink-0"
+            onClick={onMobileMenuClick}
+            aria-label="Menu"
+          >
+            <Menu className="h-5 w-5" />
+          </Button>
+        )}
+      </div>
 
+      <div className="flex shrink-0 flex-wrap items-center justify-end gap-1 sm:gap-2 md:gap-4">
       {/* Notifications */}
      <DropdownMenu>
   <DropdownMenuTrigger asChild>
@@ -133,7 +153,10 @@ export function Navbar() {
     </Button>
   </DropdownMenuTrigger>
 
-  <DropdownMenuContent align="end" className="w-80 max-h-96 overflow-y-auto">
+  <DropdownMenuContent
+    align="end"
+    className="max-h-96 w-[min(20rem,calc(100vw-2rem))] overflow-y-auto sm:w-80"
+  >
     <DropdownMenuLabel className="flex justify-between items-center">
       {t("navbar.notifications")}
       <Button
@@ -183,7 +206,10 @@ export function Navbar() {
             <User className="h-5 w-5" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuContent
+          align="end"
+          className="w-[min(14rem,calc(100vw-2rem))] sm:w-56"
+        >
           <DropdownMenuLabel>{t("navbar.account")}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => navigate("/change-password")}>
@@ -200,9 +226,22 @@ export function Navbar() {
       </DropdownMenu>
 
       {/* Language Switcher */}
-      <Button variant="outline" size="sm" className="font-semibold" onClick={toggleLang}>
-        {lang === "fr" ? "العربية" : "Français"}
+      <Button
+        variant="outline"
+        size="sm"
+        className="font-semibold max-sm:px-2"
+        onClick={toggleLang}
+        aria-label={lang === "fr" ? "العربية" : "Français"}
+      >
+        <span className="hidden sm:inline">
+          {lang === "fr" ? "العربية" : "Français"}
+        </span>
+        <span className="sm:hidden text-xs font-bold">
+          {lang === "fr" ? "ع" : "FR"}
+        </span>
       </Button>
+      </div>
     </header>
   );
 }
+

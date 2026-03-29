@@ -35,18 +35,28 @@ export default function LawyerDetailsModal({ isOpen, onClose, lawyer }: LawyerDe
 
   if (!lawyer) return null;
 
-  // Status badge colors matching project palette (PdfModal / CaseTable)
-  const getStatusColor = (status: string) => {
-    const statusMap: Record<string, string> = {
-      "En cours": "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
-      "Planifié": "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
-      "Terminé": "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
-      "Suspendu": "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
-      "En attente": "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300"
-    };
-    return statusMap[status] || "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300";
+const getStatusColor = (status: string) => {
+  const statusMap: Record<string, string> = {
+    ACCEPTEE: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
+    REFUSEE: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
+    EN_COURS: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
+    CLOTUREE: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
+    EN_ATTENTE: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300"
   };
 
+  return statusMap[status] || "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300";
+};
+const getStatusLabel = (status: string) => {
+  const map: Record<string, string> = {
+    ACCEPTEE: t("status.acceptee"),
+    REFUSEE: t("status.refusee"),
+    EN_COURS: t("status.en_cours"),
+    CLOTUREE: t("status.cloturee"),
+    EN_ATTENTE: t("status.en_attente"),
+  };
+
+  return map[status] || status;
+};
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent
@@ -180,7 +190,7 @@ export default function LawyerDetailsModal({ isOpen, onClose, lawyer }: LawyerDe
                               <h4 className="font-semibold text-base text-foreground">{a.title}</h4>
                             </div>
                             <Badge className={getStatusColor(a.status)} variant="secondary">
-                              {a.status}
+                            {getStatusLabel(a.status)}    
                             </Badge>
                           </div>
                           <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">

@@ -11,6 +11,16 @@ import { FileText, Scale, User, Calendar, Hash, AlertCircle } from "lucide-react
 import { useLanguage } from "@/i18n";
 import { Loader2 } from "lucide-react";
 import { getAllLawyers } from "@/lib/api/lawyerApi";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface CaseModalProps {
   isOpen: boolean;
@@ -30,9 +40,9 @@ caseData?: Case;
 }
 
 
-
 export function CaseModal({ isOpen, onClose, onSave, caseData }: CaseModalProps) {
 const [lawyers, setLawyers] = useState<{id: string, nom: string, prenom:string}[]>([]);
+const isEdit = !!caseData;
 
   // Frontend lowercase enums
 const caseTypes: CaseType[] = ["criminel", "enquete", "enqueteur_preliminaire"];
@@ -57,7 +67,8 @@ const [formData, setFormData] = useState<{
 });
 
 const [isLoading, setIsLoading] = useState(false);
-
+const canChangeLawyer =
+  !caseData || caseData.status === "en_attente";
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const { t, lang } = useLanguage();
@@ -81,31 +92,29 @@ useEffect(() => {
 }, [isOpen, assignmentMode]);
 
 useEffect(() => {
-  console.log("Editing caseData:", caseData); // for debugging
+  if (!caseData) return; // ✅ IMPORTANT
 
-  if (caseData) {
-    // Map the sousType from caseData to the correct SelectItem value
   const matchedSousType =
-  sousTypeOptions[caseData.type as CaseType]?.find(
-    (st) => st.value === caseData.sousType
-  )?.value;
-    setFormData({
-      numero: caseData.caseNumber || "",
-      titre: caseData.title || null,
-      type: caseData.type || "criminel",
-      sousType: matchedSousType, // undefined if no match
-      nomAccuse: caseData.nomAccuse || "",
-      dateTribunal: caseData.courtDate?.split("T")[0] || "",
-    });
+    sousTypeOptions[caseData.type as CaseType]?.find(
+      (st) => st.value.toLowerCase() === caseData.sousType?.toLowerCase()
+    )?.value;
+
+  setFormData({
+    numero: caseData.caseNumber || "",
+    titre: caseData.title || null,
+    type: caseData.type || "criminel",
+    sousType: matchedSousType,
+    nomAccuse: caseData.nomAccuse || "",
+    dateTribunal: caseData.courtDate?.split("T")[0] || "",
+  });
+
+  // ✅ SAFE access
+  if (caseData?.assignedLawyerId) {
+    setassignmentMode("MANUAL");
+    setSelectedLawyerId(caseData.assignedLawyerId);
   } else {
-    setFormData({
-      numero: "",
-      titre: null,
-      type: "criminel",
-      sousType: undefined,
-      nomAccuse: "",
-      dateTribunal: "",
-    });
+    setassignmentMode("AUTOMATIC");
+    setSelectedLawyerId(null);
   }
 
   setErrors({});
@@ -152,8 +161,12 @@ const CASE_TYPE_LABEL_KEY: Record<CaseType, string> = {
   ],
   enqueteur_preliminaire: [],
 };
-
-
+useEffect(() => {
+  if (assignmentMode !== "MANUAL") {
+    setSelectedLawyerId(null);
+  }
+}, [assignmentMode]);
+const [open, setOpen] = useState(false);
   const validateField = (name: string, value: string) => {
     switch (name) {
       case "numero":
@@ -189,11 +202,26 @@ const handleChange = (field: string, value: string) => {
     setErrors({ ...errors, [field]: error });
   }
 };
+const isFormValid = () => {
+  // Validate required fields
+  if (!formData.numero) return false;
+  if (!formData.nomAccuse || formData.nomAccuse.length < 2) return false;
+  if (!formData.dateTribunal) return false;
 
+  // Optional field with rule
+  if (formData.titre && formData.titre.length < 3) return false;
+
+  // Manual assignment check
+  if (assignmentMode === "MANUAL" && !selectedLawyerId) return false;
+
+  return true;
+};
 const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
 
   const newErrors: Record<string, string> = {};
+
+  // Validate form fields
   Object.keys(formData).forEach((key) => {
     if (key === "type" || key === "sousType") return;
 
@@ -205,16 +233,25 @@ const handleSubmit = async (e: React.FormEvent) => {
     if (error) newErrors[key] = error;
   });
 
+  // ✅ Validate lawyer (separate)
+  if (assignmentMode === "MANUAL" && !selectedLawyerId) {
+    newErrors.assignedLawyerId = t("cases.modal.error.lawyerRequired");
+  }
+
+  // ❗ Check ALL errors together
   if (Object.keys(newErrors).length > 0) {
     setErrors(newErrors);
+
     setTouched(
       Object.keys(formData).reduce(
         (acc, key) => ({ ...acc, [key]: true }),
         {}
       )
     );
+
     return;
   }
+
 
 const payload = {
   ...formData,
@@ -413,86 +450,131 @@ const payload = {
             )}
           </div>
 {/* Assignment Method */}
-<div className="space-y-2">
-  <Label className="flex items-center gap-2 text-sm font-semibold">
-    <User className="w-4 h-4" /> {t("cases.modal.assignment")}
-    <span className="text-red-500">*</span>
 
-  </Label>
+{!isEdit && (
+  <div className="space-y-2">
+    <Label className="flex items-center gap-2 text-sm font-semibold">
+      <User className="w-4 h-4" /> {t("cases.modal.assignment")}
+      <span className="text-red-500">*</span>
+    </Label>
 
-  <div className="flex gap-4">
-    {/* AUTOMATIC */}
-    <label className="relative flex items-center cursor-pointer gap-2 select-none">
-      <input
-        type="radio"
-        value="AUTOMATIC"
-        checked={assignmentMode === "AUTOMATIC"}
-        onChange={() => setassignmentMode("AUTOMATIC")}
-        className="peer absolute opacity-0 w-0 h-0"
-      />
-      <span className="w-5 h-5 rounded-full border-2 border-gray-300 peer-checked:border-blue-600 peer-checked:bg-blue-600 transition-colors flex-shrink-0"></span>
-      <span className="text-sm">
-        {t("cases.modal.assignment.automatic")}
-      </span>
-    </label>
+    <div className="flex gap-4">
+      {/* AUTOMATIC */}
+      <label className="relative flex items-center cursor-pointer gap-2 select-none">
+        <input
+          type="radio"
+            disabled={!canChangeLawyer}
 
-    {/* MANUAL */}
-    <label className="relative flex items-center cursor-pointer gap-2 select-none">
-      <input
-        type="radio"
-        value="MANUAL"
-        checked={assignmentMode === "MANUAL"}
-        onChange={() => setassignmentMode("MANUAL")}
-        className="peer absolute opacity-0 w-0 h-0"
-      />
-      <span className="w-5 h-5 rounded-full border-2 border-gray-300 peer-checked:border-blue-600 peer-checked:bg-blue-600 transition-colors flex-shrink-0"></span>
-      <span className="text-sm">
-        {t("cases.modal.assignment.manual")}
-      </span>
-    </label>
+          value="AUTOMATIC"
+          checked={assignmentMode === "AUTOMATIC"}
+          onChange={() => setassignmentMode("AUTOMATIC")}
+          className="peer absolute opacity-0 w-0 h-0"
+        />
+        <span className="w-5 h-5 rounded-full border-2 border-gray-300 peer-checked:border-blue-600 peer-checked:bg-blue-600 transition-colors flex-shrink-0"></span>
+        <span className="text-sm">{t("cases.modal.assignment.automatic")}</span>
+      </label>
+
+      {/* MANUAL */}
+      <label className="relative flex items-center cursor-pointer gap-2 select-none">
+        <input
+          type="radio"
+            disabled={!canChangeLawyer}
+
+          value="MANUAL"
+          checked={assignmentMode === "MANUAL"}
+          onChange={() => setassignmentMode("MANUAL")}
+          className="peer absolute opacity-0 w-0 h-0"
+        />
+        <span className="w-5 h-5 rounded-full border-2 border-gray-300 peer-checked:border-blue-600 peer-checked:bg-blue-600 transition-colors flex-shrink-0"></span>
+        <span className="text-sm">{t("cases.modal.assignment.manual")}</span>
+      </label>
+    </div>
   </div>
-</div>
-
-
+)}
 
 {/* Lawyer Select */}
 <div
   className={`transition-all duration-200 ${
-    assignmentMode === "MANUAL" ? "opacity-100" : "opacity-50 pointer-events-none"
+    assignmentMode === "MANUAL" && canChangeLawyer
+      ? "opacity-100"
+      : "opacity-50 pointer-events-none"
   }`}
 >
-  <Select
-    value={selectedLawyerId ?? ""}
-    onValueChange={(value) => setSelectedLawyerId(value)}
-    disabled={assignmentMode !== "MANUAL"}
-  >
-    <SelectTrigger className="h-11">
-      <SelectValue
-        placeholder={`-- ${t("cases.modal.selectLawyerPlaceholder")} --`}
-      />
-    </SelectTrigger>
+  <Popover open={open} onOpenChange={setOpen}>
+    <PopoverTrigger asChild>
+      <Button
+        variant="outline"
+        role="combobox"
+        aria-expanded={open}
+        className="w-full justify-between h-11"
+        disabled={assignmentMode !== "MANUAL"|| !canChangeLawyer}
+      >
+        {selectedLawyerId
+          ? (() => {
+              const lawyer = lawyers.find(
+                (l) => l.id === selectedLawyerId
+              );
+              return lawyer
+                ? `${lawyer.prenom} ${lawyer.nom}`
+                : t("cases.modal.selectLawyerPlaceholder");
+            })()
+          : t("cases.modal.selectLawyerPlaceholder")}
 
-    <SelectContent>
-      {lawyers.length === 0 ? (
-        <SelectItem value="loading" disabled>
-          {t("cases.modal.loading")}
-        </SelectItem>
-      ) : (
-        lawyers.map((lawyer) => (
-          <SelectItem key={lawyer.id} value={lawyer.id}>
-            {lawyer.prenom} {lawyer.nom}
-          </SelectItem>
-        ))
-      )}
-    </SelectContent>
-  </Select>
+        <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />
+      </Button>
+    </PopoverTrigger>
+
+    <PopoverContent className="w-full p-0">
+      <Command>
+        {/* 🔍 Search */}
+        <CommandInput
+          placeholder={t("cases.modal.searchLawyer") || "Search lawyer..."}
+        />
+
+        <CommandEmpty>
+          {t("cases.modal.noLawyerFound") || "No lawyer found"}
+        </CommandEmpty>
+
+        <CommandGroup className="max-h-60 overflow-y-auto">
+          {lawyers.map((lawyer) => (
+            <CommandItem
+              key={lawyer.id}
+              value={`${lawyer.prenom} ${lawyer.nom}`}
+              onSelect={() => {
+                setSelectedLawyerId(lawyer.id);
+                setOpen(false); // close after select
+              }}
+            >
+              <Check
+                className={cn(
+                  "mr-2 h-4 w-4",
+                  selectedLawyerId === lawyer.id
+                    ? "opacity-100"
+                    : "opacity-0"
+                )}
+              />
+              {lawyer.prenom} {lawyer.nom}
+            </CommandItem>
+          ))}
+        </CommandGroup>
+      </Command>
+    </PopoverContent>
+  </Popover>
+
+  {/* Error display */}
+  {errors.assignedLawyerId && (
+    <div className="text-xs text-red-600 mt-1">
+      {errors.assignedLawyerId}
+    </div>
+  )}
+  {caseData && !canChangeLawyer && (
+  <div className="text-xs text-red-600 mt-2 flex items-center gap-1">
+    <AlertCircle className="h-3 w-3" />
+    {t("cases.modal.assignmentLocked") ||
+      "Impossible de modifier l’avocat assigné sauf si le statut est en attente."}
+  </div>
+)}
 </div>
-
-
-
-
-
-
 
 
           {/* Date tribunal */}
@@ -531,10 +613,10 @@ const payload = {
   {t("cases.modal.cancel")}
 </Button>
 
-          <Button
+<Button
   type="submit"
   className="gradient-accent h-11 px-8 font-semibold"
-  disabled={isLoading}
+  disabled={isLoading || !isFormValid()}
 >
   {isLoading && (
     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

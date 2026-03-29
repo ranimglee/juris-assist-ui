@@ -20,7 +20,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="relative h-[600px] flex items-center justify-center overflow-hidden">
+      <section className="relative flex min-h-[min(600px,90vh)] items-center justify-center overflow-hidden py-16 sm:py-0">
         <div className="absolute inset-0 gradient-hero" />
         <div 
           className="absolute inset-0 opacity-20"
@@ -31,14 +31,14 @@ const Index = () => {
           }}
         />
         
-        <div className="relative z-10 max-w-4xl mx-auto px-6 text-center text-white">
-          <div className="mb-6 inline-block">
-            <Scale className="h-20 w-20 text-secondary" />
+        <div className="relative z-10 mx-auto max-w-4xl px-4 text-center text-white sm:px-6">
+          <div className="mb-4 inline-block sm:mb-6">
+            <Scale className="h-14 w-14 text-secondary sm:h-20 sm:w-20" />
           </div>
-          <h1 className="text-5xl md:text-6xl font-serif font-bold mb-6 tracking-tight">
+          <h1 className="mb-4 font-serif text-3xl font-bold tracking-tight sm:mb-6 sm:text-5xl md:text-6xl">
             {t("home.hero.title")}
           </h1>
-          <p className="text-xl md:text-2xl mb-8 text-white/90 font-sans">
+          <p className="mb-6 font-sans text-base text-white/90 sm:mb-8 sm:text-xl md:text-2xl">
             {t("home.hero.subtitle")}
           </p>
           <div className="flex gap-4 justify-center flex-wrap">

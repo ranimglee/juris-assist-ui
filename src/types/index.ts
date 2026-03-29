@@ -24,7 +24,7 @@ export type SousType =
 
 export type CaseType = "criminel" | "enquete" | "enqueteur_preliminaire";
 
-export type CaseStatus = "pending" | "assigned" | "accepted" | "rejected" | "completed";
+export type CaseStatus = "en_attente" | "en_cours" | "acceptee" | "refusee" | "cloturee";
 
 export type Case = {
   id: number;
@@ -38,7 +38,8 @@ export type Case = {
   status: CaseStatus;
   assignedLawyerId?: string;
   assignedLawyerName?: string; // on peut récupérer le nom depuis API avocat
-  notificationSent?: string
+  notificationSent?: string,
+  assignmentMode:AssignmentMode
 };
 
 

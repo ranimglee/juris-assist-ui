@@ -3,10 +3,10 @@ import { CaseStatus, CaseType, SousType } from "@/types";
 /** Backend enums (exactly as backend sends them) */
 export type BackendCaseStatus =
   | "EN_ATTENTE"
-  | "ASSIGNEE"
+  | "EN_COURS"
   | "ACCEPTEE"
   | "REFUSEE"
-  | "TERMINEE";
+  | "CLOTUREE";
 
 export interface BackendCase {
   id: number;

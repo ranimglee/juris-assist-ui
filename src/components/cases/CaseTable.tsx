@@ -27,28 +27,28 @@ const statusConfig: Record<
     icon: React.ElementType;
   }
 > = {
-  pending: {
-    labelKey: "cases.status.pending",
+  en_attente: {
+    labelKey: "cases.status.en_attente",
     variant: "outline",
     icon: Clock,
   },
-  assigned: {
-    labelKey: "cases.status.assigned",
+  en_cours: {
+    labelKey: "cases.status.en_cours",
     variant: "secondary",
     icon: AlertCircle,
   },
-  accepted: {
-    labelKey: "cases.status.accepted",
+  acceptee: {
+    labelKey: "cases.status.acceptee",
     variant: "default",
     icon: CheckCircle,
   },
-  rejected: {
-    labelKey: "cases.status.rejected",
+  refusee: {
+    labelKey: "cases.status.refusee",
     variant: "destructive",
     icon: XCircle,
   },
-  completed: {
-    labelKey: "cases.status.completed",
+  cloturee: {
+    labelKey: "cases.status.cloturee",
     variant: "default",
     icon: CheckCircle,
   },

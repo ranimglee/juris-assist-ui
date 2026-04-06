@@ -582,9 +582,9 @@ const translations: Translations = {
     "navbar.logout.success": "تم تسجيل الخروج بنجاح",
     "case.status.en_attente": "في الانتظار",
       "case.status.acceptee": "مقبولة",
-      "case.status.rejetee": "مرفوضة",
+      "case.status.refusee": "مرفوضة",
       "case.status.assignee": "مخصصة",
-      "case.status.completee": "مغلقة",
+      "case.status.cloturee": "مغلقة",
   
     // Login
     "login.title": "مسؤول التساخير",

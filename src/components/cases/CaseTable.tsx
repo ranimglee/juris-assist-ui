@@ -3,7 +3,7 @@ import { Case, CaseStatus } from "@/types";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Pencil, Trash2, Send, CheckCircle, XCircle, Clock, AlertCircle, ArrowUpDown, FileText, Search } from "lucide-react";
+import { Pencil, Trash2, Send, CheckCircle, XCircle, Clock, AlertCircle, ArrowUpDown, FileText, Search, LockIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { DeleteModal } from "./DeleteModal";
 import PdfModal from "./PdfModal";
@@ -49,8 +49,9 @@ const statusConfig: Record<
   },
   cloturee: {
     labelKey: "cases.status.cloturee",
-    variant: "default",
-    icon: CheckCircle,
+    variant: "secondary",
+    icon: LockIcon,
+
   },
 };
 

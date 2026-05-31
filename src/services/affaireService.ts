@@ -19,5 +19,6 @@ export const getAffairesByAvocatId = async (avocatId: number): Promise<Case[]> =
     createdAt: affaire.dateCreation,
     courtDate: affaire.dateTribunal,
     status: affaire.statut,
+    assignmentMode: affaire.assignmentMode,
   }));
 };

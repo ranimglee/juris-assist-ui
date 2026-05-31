@@ -12,6 +12,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ChangePassword from "./pages/ChangePassword";
 import ResetPassword from "./pages/ResetPassword";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
+import AidesJudiciaires from "./pages/AidesJudiciaires";
 
 const queryClient = new QueryClient();
 
@@ -49,6 +50,14 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <Cases />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/aides-judiciaires"
+            element={
+              <ProtectedRoute>
+                <AidesJudiciaires />
               </ProtectedRoute>
             }
           />

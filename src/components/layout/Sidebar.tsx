@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard, Users, Briefcase, LogOut } from "lucide-react";
+import { LayoutDashboard, Users, Briefcase, Scale, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import onatLogo from "@/assets/logo-onan.png";
 import { useLanguage } from "@/i18n";
@@ -9,6 +9,7 @@ const navigation = [
   { key: "dashboard", href: "/dashboard", icon: LayoutDashboard },
   { key: "lawyers", href: "/lawyers", icon: Users },
   { key: "cases", href: "/cases", icon: Briefcase },
+  { key: "aides", href: "/aides-judiciaires", icon: Scale },
 ];
 
 type SidebarProps = {

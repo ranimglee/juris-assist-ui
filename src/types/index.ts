@@ -58,3 +58,38 @@ export type AffaireFormData = {
   dateTribunal: string;
 };
 export type AssignmentMode = "AUTOMATIC" | "MANUAL";
+
+export type CourType =
+  | "TRIBUNAL_PREMIERE_INSTANCE_GROMBALIA"
+  | "TRIBUNAL_PREMIERE_INSTANCE_NABEUL"
+  | "COUR_APPEL_NABEUL"
+  | "TRIBUNAL_NAHAIYA_GROMBALIA";
+
+export type CircuitType = "PENAL" | "CIVIL" | "FAMILLE" | "URGENT";
+
+export interface AideJudiciaire {
+  id: number;
+  numeroDossier: string;
+  cour: CourType;
+  circuit: CircuitType;
+  nomDemandeur: string;
+  dateDecision: string;
+  dateAudience: string;
+  assignedAt?: string | null;
+  avocatId?: number | null;
+  avocatNom?: string | null;
+  status: "ASSIGNED" | "UNASSIGNED";
+}
+
+export interface EligibleAvocat {
+  id: number;
+  nom: string;
+  prenom: string;
+  identifiant: string;
+  email: string;
+  telephone: string;
+  region: string;
+  aideJudiciaireCount: number;
+  lastAssignedAt?: string | null;
+  priorityScore: number;
+}

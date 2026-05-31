@@ -148,11 +148,41 @@ export function CaseTable({
     setDeleteModalOpen(true);
   };
 
-  const handleViewPdf = (caseItem: Case) => {
-    setSelectedCase(caseItem);
-    setOpenPdf(true);
-};
 
+// Download PDF function using backend API
+const handleDownloadPdf = async (caseItem: Case) => {
+  try {
+    const baseUrl = import.meta.env.VITE_API_BASE_URL;
+    const response = await fetch(`${baseUrl}/api/affaires/export/${caseItem.id}/pdf`, {
+      method: "GET",
+      headers: { Accept: "application/pdf" },
+    });
+
+    if (!response.ok) throw new Error("Failed to download PDF");
+
+    const blob = await response.blob();
+    if (blob.type !== "application/pdf") throw new Error("Received file is not a PDF");
+
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+
+    const disposition = response.headers.get("Content-Disposition");
+    let filename = `affaire_${caseItem.caseNumber}.pdf`;
+    if (disposition && disposition.includes("filename=")) {
+      filename = disposition.split("filename=")[1].split(";")[0].replace(/"/g, "").trim();
+    }
+
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error(error);
+    alert("Erreur lors du téléchargement du PDF.");
+  }
+};
 
   const handleSort = (field: keyof Case | "courtDate" | "status" | "assignedLawyerName") => {
     if (sortField === field) {
@@ -438,14 +468,17 @@ const StatusIcon = status.icon;
                         </Button>
                        
                   
-<Button 
-  variant="outline" 
-  size="sm" 
-  onClick={() => handleViewPdf(caseItem)}
-  className="hover:bg-purple-50 hover:border-purple-300 hover:text-purple-700 transition-all"
->
-  <FileText className="h-4 w-4" />
-</Button>
+ {/* Render PDF button only if status is not "en_attente" */}
+    {caseItem.status !== "en_attente" && (
+      <Button 
+        variant="outline" 
+        size="sm" 
+        onClick={() => handleDownloadPdf(caseItem)}
+        className="hover:bg-purple-50 hover:border-purple-300 hover:text-purple-700 transition-all"
+      >
+        <FileText className="h-4 w-4" />
+      </Button>
+    )}
 
 
 
